@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% load bootstrap4 %}
+
+{% block title %}
+    Profile
+{% endblock %}
+
+
+{% block content %}
+
+    <h4 class="container">Profile | <a href="{% url 'accounts:profile-address' %}">Address</a></h4>
+
+    <div class="container">
+        <div class="form-group mt-3">
+            <form method="POST" enctype="multipart/form-data">
+
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                {{ form.media }}
+
+                <a href="{% url 'accounts:password_change' %}" class="auth_link">Change Password</a>
+
+                {% buttons %}
+                    <button type="submit" class="btn btn-primary btn-large mt-4">Save</button>
+                {% endbuttons %}
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
+

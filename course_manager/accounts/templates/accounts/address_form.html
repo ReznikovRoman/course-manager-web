@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% load bootstrap4 %}
+
+{% block title %}
+    Address
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="container">
+        <h4 class="container"><a href="{% url 'accounts:profile' %}">Profile</a> | Address</h4>
+
+        <div class="container">
+            <div class="form-group mt-3">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    {% bootstrap_form form %}
+
+                    {% buttons %}
+                        <button type="submit" class="btn btn-primary btn-large mt-4">Save</button>
+                    {% endbuttons %}
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+

@@ -19,9 +19,15 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 
+from . import views as project_views
+
+
+##################################################################################################################
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    path('', project_views.HomePage.as_view(), name='homepage'),
 
     path('accounts/', include('accounts.urls', namespace='accounts')),
     path('accounts/', include('django.contrib.auth.urls')),

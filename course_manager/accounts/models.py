@@ -52,7 +52,7 @@ class CustomUserManager(BaseUserManager):
 
 
 def get_default_profile_pic():
-    return 'images/profile_pics/default_profile_pics/user_1.jpg'
+    return 'images/profile_pics/default_profile_pics/user_1.png'
 
 
 class CustomUser(AbstractUser, PermissionsMixin):
@@ -91,6 +91,7 @@ class CustomUser(AbstractUser, PermissionsMixin):
 
 
 class Address(models.Model):
+    profile = models.OneToOneField("Profile", related_name='address', on_delete=models.CASCADE)
     country = models.CharField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
     street = models.CharField(max_length=100, null=True, blank=True)
@@ -112,15 +113,10 @@ class Profile(models.Model):
 
     phone = PhoneNumberField(max_length=20, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
-    address = models.ForeignKey(Address, related_name='profile', null=True, blank=True, on_delete=models.CASCADE)
 
     bio = models.TextField(null=True, blank=True)
     profile_pic = models.ImageField(null=True, blank=True, upload_to='images/profile_pics',
                                     default=get_default_profile_pic)
-
-    @property
-    def profile_pic_url(self):
-        return str(self.profile_pic)[1:]
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"

@@ -25,7 +25,7 @@ class CustomUserAdmin(BaseUserAdmin):
 
 
 class AddressAdmin(admin.ModelAdmin):
-    list_display = ('country', 'city', 'street')
+    list_display = ('profile', 'country', 'city', 'street')
 
     filter_horizontal = ()
     list_filter = ()
@@ -34,8 +34,8 @@ class AddressAdmin(admin.ModelAdmin):
 
 
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'user')
-    readonly_fields = ('id', 'user')
+    list_display = ('user', 'first_name', 'last_name', )
+    readonly_fields = ('id',)
     exclude = ('USERNAME_FIELD', )
 
     filter_horizontal = ()
