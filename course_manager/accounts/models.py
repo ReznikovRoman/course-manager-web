@@ -3,8 +3,10 @@ from django.contrib.auth.models import (User, AbstractUser, BaseUserManager, Abs
                                         PermissionsMixin, Permission)
 
 from django.utils import timezone
-
 from django.conf import settings
+
+from phonenumber_field.modelfields import PhoneNumberField
+
 
 ##################################################################################################################
 
@@ -88,11 +90,29 @@ class CustomUser(AbstractUser, PermissionsMixin):
         return True
 
 
+class Address(models.Model):
+    country = models.CharField(max_length=100, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    street = models.CharField(max_length=100, null=True, blank=True)
+    zip_code = models.CharField(max_length=20, null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'address'
+        verbose_name_plural = 'addresses'
+
+    def __str__(self):
+        return f"{self.country}, {self.city}, {self.street} | {self.zip_code}"
+
+
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='profile', on_delete=models.CASCADE)
 
     first_name = models.CharField(max_length=40, null=True, blank=True)
     last_name = models.CharField(max_length=40, null=True, blank=True)
+
+    phone = PhoneNumberField(max_length=20, null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
+    address = models.ForeignKey(Address, related_name='profile', null=True, blank=True, on_delete=models.CASCADE)
 
     bio = models.TextField(null=True, blank=True)
     profile_pic = models.ImageField(null=True, blank=True, upload_to='images/profile_pics',
@@ -104,6 +124,10 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+
+
+
 
 
 

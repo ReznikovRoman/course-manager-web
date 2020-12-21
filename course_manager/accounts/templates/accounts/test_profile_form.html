@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+{% load bootstrap4 %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test profile</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+</head>
+<body>
+
+<div class="container mt-4 mb-4">
+    <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form address_form %}
+        {% bootstrap_form profile_form %}
+        {{ profile_form.media }}
+        <input type="submit" class="btn btn-primary" value="Save">
+    </form>
+</div>
+
+
+</body>
+</html>

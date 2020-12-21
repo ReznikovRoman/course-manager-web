@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'bootstrap4',
     'ckeditor',
     'ckeditor_uploader',
+    'phonenumber_field',
 
     'accounts.apps.AccountsConfig',
 ]
@@ -233,12 +234,6 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD_ESL')
-
-
-
-
-
-
 
 
 
