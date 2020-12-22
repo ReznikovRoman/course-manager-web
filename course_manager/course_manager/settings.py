@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'phonenumber_field',
 
     'accounts.apps.AccountsConfig',
+    'courses.apps.CoursesConfig',
 
     'django_cleanup.apps.CleanupConfig',
 ]

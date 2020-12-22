@@ -32,6 +32,8 @@ urlpatterns = [
     path('accounts/', include('accounts.urls', namespace='accounts')),
     path('accounts/', include('django.contrib.auth.urls')),
 
+    path('courses/', include('courses.urls', namespace='courses')),
+
     path('ckeditor/', include('ckeditor_uploader.urls')),
 ]
 
