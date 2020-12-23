@@ -1,5 +1,7 @@
 from django.test import TestCase, SimpleTestCase
 
+import datetime
+
 from accounts.forms import (CustomUserCreationForm, AddressForm, UpdateProfileForm)
 
 
@@ -37,6 +39,33 @@ class CustomUserCreationFormTest(TestCase):
             }
         )
         self.assertTrue(form.is_valid())
+
+
+class UpdateProfileFormTest(SimpleTestCase):
+
+    def test_bio_label(self):
+        form = UpdateProfileForm()
+        self.assertEquals(form.fields['bio'].label, 'Write something about yourself')
+
+    def test_profile_pic_label(self):
+        form = UpdateProfileForm()
+        self.assertEquals(form.fields['profile_pic'].label, 'Upload your profile picture')
+
+    def test_date_of_birth_correct(self):
+        form = UpdateProfileForm(
+            data={
+                'date_of_birth': datetime.date(2002, 3, 7)
+            }
+        )
+        self.assertTrue(form.is_valid())
+
+    def test_date_of_birth_in_future(self):
+        form = UpdateProfileForm(
+            data={
+                'date_of_birth': datetime.date(3000, 12, 12)
+            }
+        )
+        self.assertFalse(form.is_valid())
 
 
 
