@@ -55,6 +55,48 @@ class SignUpViewTest(TestCase):
         self.assertRedirects(response, '/')
 
 
+class LoginViewTest(TestCase):
+
+    def setUp(self) -> None:
+        user1 = CustomUser.objects.create_user(
+            email='view1@gmail.com',
+            username='view1',
+            password='romanroman1'
+        )
+
+    def test_url_exists_at_desired_location(self):
+        response = self.client.get('/accounts/login/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name(self):
+        response = self.client.get(reverse('accounts:login'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template(self):
+        response = self.client.get(reverse('accounts:login'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'accounts/login.html')
+
+    def test_view_correct_redirect(self):
+        response = self.client.post(
+            reverse('accounts:login'),
+            data={
+                'username': 'view1@gmail.com',
+                'password': 'romanroman1',
+            },
+            follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertURLEqual(response.request['PATH_INFO'], '/')
+
+    def test_redirect_if_logged_in(self):
+        self.client.login(email='view1@gmail.com', password='romanroman1')
+        response = self.client.get(reverse('accounts:login'))
+        self.assertRedirects(response, '/')
+    
+
+
+
 
 
 
