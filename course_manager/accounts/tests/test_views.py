@@ -175,6 +175,59 @@ class EditProfileViewTest(TestCase):
             )
 
 
+class EditAddressViewTest(TestCase):
+
+    def setUp(self) -> None:
+        user1 = CustomUser.objects.create_user(
+            email='view1@gmail.com',
+            username='view1',
+            password='romanroman1'
+        )
+
+    def test_view_url_exists_at_desired_location(self):
+        self.client.login(email='view1@gmail.com', password='romanroman1')
+        response = self.client.get('/accounts/profile/address/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name(self):
+        self.client.login(email='view1@gmail.com', password='romanroman1')
+        response = self.client.get(reverse('accounts:profile-address'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template(self):
+        self.client.login(email='view1@gmail.com', password='romanroman1')
+        response = self.client.get(reverse('accounts:profile-address'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'accounts/address_form.html')
+
+    def test_restrict_view_if_not_logged_in(self):
+        response = self.client.get(reverse('accounts:profile-address'))
+        self.assertURLEqual(
+            response.url,
+            f"{reverse('accounts:login')[1:]}?next={reverse('accounts:profile-address')}"
+        )
+
+    def test_view_displays_only_current_user_details(self):
+        self.client.login(email='view1@gmail.com', password='romanroman1')
+        # Update address details
+        address = CustomUser.objects.get(pk=1).profile.address
+        attrs = {
+            'country': 'Russia',
+            'city': 'Moscow',
+            'street': "Arbat",
+            'zip_code': '137317',
+        }
+        for name, value in attrs.items():
+            setattr(address, name, value)
+        address.save()
+
+        response = self.client.get(reverse('accounts:profile-address'))
+        for name, value in attrs.items():
+            self.assertEqual(
+                response.context['form'].initial[name],
+                value
+            )
+
 
 
 
