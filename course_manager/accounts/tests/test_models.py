@@ -158,6 +158,76 @@ class ProfileModelTest(TestCase):
         self.assertEquals(profile_object_name, 'Roman Reznikov')
 
 
+class AddressModelTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        # Create new user
+        user = CustomUser.objects.create_user(
+            email='address1@gmail.com',
+            username='address1',
+            password='romanroman1',
+        )
+
+        # Update profile
+        profile = user.profile
+        setattr(profile, 'first_name', 'Roman')
+        setattr(profile, 'last_name', 'Reznikov')
+        setattr(profile, 'phone', '+79851686043')
+        profile.save()
+
+        # Update Address
+        address = profile.address
+        attrs = {
+            'country': 'Russia',
+            'city': 'Moscow',
+            'street': 'Arbat',
+            'zip_code': '1812813',
+        }
+        for name, value in attrs.items():
+            setattr(address, name, value)
+        address.save()
+
+    def test_country_max_length(self):
+        address = CustomUser.objects.get(pk=1).profile.address
+        max_length = address._meta.get_field('country').max_length
+        self.assertEquals(max_length, 100)
+
+    def test_city_max_length(self):
+        address = CustomUser.objects.get(pk=1).profile.address
+        max_length = address._meta.get_field('city').max_length
+        self.assertEquals(max_length, 100)
+
+    def test_street_max_length(self):
+        address = CustomUser.objects.get(pk=1).profile.address
+        max_length = address._meta.get_field('street').max_length
+        self.assertEquals(max_length, 100)
+
+    def test_zip_code_max_length(self):
+        address = CustomUser.objects.get(pk=1).profile.address
+        max_length = address._meta.get_field('zip_code').max_length
+        self.assertEquals(max_length, 20)
+
+    def test_verbose_name_singular_is_address(self):
+        address = CustomUser.objects.get(pk=1).profile.address
+        verbose_name = address._meta.verbose_name
+        self.assertEquals(verbose_name, 'address')
+
+    def test_verbose_name_plural_is_addresses(self):
+        address = CustomUser.objects.get(pk=1).profile.address
+        verbose_name = address._meta.verbose_name_plural
+        self.assertEquals(verbose_name, 'addresses')
+
+    def test_object_name(self):
+        address = CustomUser.objects.get(pk=1).profile.address
+        object_name = str(address)
+        self.assertEquals(
+            object_name,
+            'Russia, Moscow, Arbat | 1812813'
+        )
+
+
+
 
 
 
