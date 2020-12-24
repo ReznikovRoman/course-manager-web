@@ -32,6 +32,8 @@ class CustomUserManager(BaseUserManager):
             username=username,
             password=password,
         )
+        user.is_staff = True
+        user.save(using=self._db)
         return user
 
     def create_superuser(self, email, username, password):
@@ -46,6 +48,22 @@ class CustomUserManager(BaseUserManager):
 
         user.save(using=self._db)
         return user
+
+    def get_or_create(self, email, username, password=None):
+        created = True
+        try:
+            user = self.get(
+                email=self.normalize_email(email),
+                username=username,
+            )
+            created = False
+        except CustomUser.DoesNotExist:
+            user = self.create_user(
+                email=self.normalize_email(email),
+                username=username,
+                password=password
+            )
+        return user, created
 
 
 #############################################################################################################

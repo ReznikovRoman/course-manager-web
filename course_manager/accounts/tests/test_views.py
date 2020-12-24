@@ -245,7 +245,3 @@ class EditAddressViewTest(TestCase):
 
 
 
-
-
-
-
