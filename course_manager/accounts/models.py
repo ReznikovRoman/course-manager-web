@@ -8,7 +8,6 @@ from django.conf import settings
 
 from phonenumber_field.modelfields import PhoneNumberField
 
-
 ##################################################################################################################
 from courses.models import CourseInstance, Course
 
@@ -76,7 +75,6 @@ def get_default_profile_pic():
 
 
 class CustomUser(AbstractUser, PermissionsMixin):
-
     # required fields
     email = models.EmailField(verbose_name='email', max_length=60, unique=True)
     username = models.CharField(max_length=30, unique=True)
@@ -139,7 +137,14 @@ class Profile(models.Model):
                                     default=get_default_profile_pic)
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        if self.first_name and self.last_name:
+            return f"{self.first_name} {self.last_name}"
+        elif self.first_name:
+            return self.first_name
+        elif self.last_name:
+            return self.last_name
+        else:
+            return f"Student - {self.pk}"
 
 
 # ============== STAFF ============================= #################################################################
@@ -184,16 +189,3 @@ class Manager(StaffWorker):
         manager_group = Group.objects.get(name='managers')
         manager_group.user_set.add(self.user)
         super(Manager, self).save(*args, **kwargs)
-
-
-
-
-
-
-
-
-
-
-
-
-
