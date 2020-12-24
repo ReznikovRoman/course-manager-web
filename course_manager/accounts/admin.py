@@ -2,6 +2,9 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Permission
 
+from django.urls import reverse
+from django.utils.safestring import mark_safe
+
 from . import models
 
 #######################################################################################################################
@@ -64,12 +67,20 @@ class TeacherAdmin(admin.ModelAdmin):
     list_filter = ()
     fieldsets = ()
     ordering = ()
+    readonly_fields = ('get_user_link', )
 
     def get_supervised_courses(self, obj):
         if obj.supervised_courses.all():
             return "; ".join([str(course) for course in obj.supervised_courses.all()])
         else:
             return '-'
+
+    def get_user_link(self, obj: models.Teacher):
+        return mark_safe(
+            f"""<a href="{reverse('admin:accounts_teacher_change', args=(obj.user.pk,))}">{obj.user}</a>"""
+        )
+
+    get_user_link.short_description = 'user link'
 
 
 class ManagerAdmin(admin.ModelAdmin):
@@ -80,6 +91,12 @@ class ManagerAdmin(admin.ModelAdmin):
     list_filter = ()
     fieldsets = ()
     ordering = ()
+    readonly_fields = ('get_user_link', )
+
+    def get_user_link(self, obj: models.Manager):
+        return mark_safe(
+            f"""<a href="{reverse('admin:accounts_customuser_change', args=(obj.user.pk,))}">{obj.user}</a>"""
+        )
 
     def get_supervised_courses(self, obj):
         if obj.supervised_courses.all():
@@ -92,6 +109,8 @@ class ManagerAdmin(admin.ModelAdmin):
             return "; ".join([str(course_i) for course_i in obj.supervised_course_instances.all()])
         else:
             return '-'
+
+    get_user_link.short_description = 'user link'
 
 
 ######################################################################################################################
