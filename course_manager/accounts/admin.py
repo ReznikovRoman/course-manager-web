@@ -103,7 +103,6 @@ admin.site.register(models.Address, AddressAdmin)
 
 admin.site.register(Permission)
 
-admin.site.register(models.StaffWorker)
 admin.site.register(models.Teacher, TeacherAdmin)
 admin.site.register(models.Manager, ManagerAdmin)
 
