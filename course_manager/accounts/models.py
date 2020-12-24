@@ -1,6 +1,7 @@
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.contrib.auth.models import (User, AbstractUser, BaseUserManager, AbstractBaseUser,
-                                        PermissionsMixin, Permission)
+                                        PermissionsMixin, Permission, Group)
 
 from django.utils import timezone
 from django.conf import settings
@@ -9,6 +10,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 ##################################################################################################################
+from courses.models import CourseInstance, Course
 
 
 class CustomUserManager(BaseUserManager):
@@ -140,7 +142,48 @@ class Profile(models.Model):
         return f"{self.first_name} {self.last_name}"
 
 
+# ============== STAFF ============================= #################################################################
 
+class StaffWorker(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    salary = models.IntegerField(
+        null=True,
+        blank=True,
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(1000000),
+        ]
+    )
+
+    @property
+    def profile(self):
+        return self.user.profile
+
+    def save(self, *args, **kwargs):
+        self.user.is_staff = True
+        super(StaffWorker, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Staff | {self.profile.first_name} {self.profile.last_name} "
+
+
+class Teacher(StaffWorker):
+    supervised_courses = models.ManyToManyField(CourseInstance, related_name='teachers')
+
+    def save(self, *args, **kwargs):
+        teacher_group = Group.objects.get(name='teachers')
+        teacher_group.user_set.add(self.user)
+        super(Teacher, self).save(*args, **kwargs)
+
+
+class Manager(StaffWorker):
+    supervised_course_instances = models.ManyToManyField(CourseInstance, related_name='managers')
+    supervised_courses = models.ManyToManyField(Course, related_name='managers')
+
+    def save(self, *args, **kwargs):
+        manager_group = Group.objects.get(name='managers')
+        manager_group.user_set.add(self.user)
+        super(Manager, self).save(*args, **kwargs)
 
 
 

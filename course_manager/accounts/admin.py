@@ -1,7 +1,5 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib import admin
-from django.contrib import admin
 from django.contrib.auth.models import Permission
 
 from . import models
@@ -58,6 +56,44 @@ class ProfileAdmin(admin.ModelAdmin):
     ordering = ()
 
 
+class TeacherAdmin(admin.ModelAdmin):
+    list_display = ('user', 'get_supervised_courses')
+    exclude = ('USERNAME_FIELD', )
+
+    filter_horizontal = ('supervised_courses', )
+    list_filter = ()
+    fieldsets = ()
+    ordering = ()
+
+    def get_supervised_courses(self, obj):
+        if obj.supervised_courses.all():
+            return "; ".join([str(course) for course in obj.supervised_courses.all()])
+        else:
+            return '-'
+
+
+class ManagerAdmin(admin.ModelAdmin):
+    list_display = ('user', 'get_supervised_courses', 'get_supervised_course_instances')
+    exclude = ('USERNAME_FIELD', )
+
+    filter_horizontal = ('supervised_courses', 'supervised_course_instances', )
+    list_filter = ()
+    fieldsets = ()
+    ordering = ()
+
+    def get_supervised_courses(self, obj):
+        if obj.supervised_courses.all():
+            return "; ".join([str(course) for course in obj.supervised_courses.all()])
+        else:
+            return '-'
+
+    def get_supervised_course_instances(self, obj):
+        if obj.supervised_courses.all():
+            return "; ".join([str(course_i) for course_i in obj.supervised_course_instances.all()])
+        else:
+            return '-'
+
+
 ######################################################################################################################
 
 
@@ -67,6 +103,8 @@ admin.site.register(models.Address, AddressAdmin)
 
 admin.site.register(Permission)
 
-
+admin.site.register(models.StaffWorker)
+admin.site.register(models.Teacher, TeacherAdmin)
+admin.site.register(models.Manager, ManagerAdmin)
 
 
