@@ -69,7 +69,7 @@ class TeacherAdmin(admin.ModelAdmin):
     ordering = ()
     readonly_fields = ('get_user_link', )
 
-    def get_supervised_courses(self, obj):
+    def get_supervised_courses(self, obj: models.Teacher):
         if obj.supervised_courses.all():
             return "; ".join([str(course) for course in obj.supervised_courses.all()])
         else:

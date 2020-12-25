@@ -20,7 +20,7 @@ class CourseAdmin(admin.ModelAdmin):
 
 
 class CourseInstanceAdmin(admin.ModelAdmin):
-    list_display = ('sub_title', 'base_course_link', 'min_mark', 'start_date', 'end_date', 'assignments_count')
+    list_display = ('sub_title', 'base_course_link', 'min_mark', 'start_date', 'end_date', 'enrolls_count')
     search_fields = ('sub_title', 'course__base_title')
     readonly_fields = ('get_teachers', )
 
@@ -29,8 +29,8 @@ class CourseInstanceAdmin(admin.ModelAdmin):
             f"""<a href="{reverse('admin:courses_course_change', args=(obj.course.pk,))}">{obj.course}</a>"""
         )
 
-    def assignments_count(self, obj: models.CourseInstance):
-        return obj.course_assignments.count()
+    def enrolls_count(self, obj: models.CourseInstance):
+        return obj.enrolls.count()
 
     def get_teachers(self, obj: models.CourseInstance):
         teachers = obj.teachers.all()

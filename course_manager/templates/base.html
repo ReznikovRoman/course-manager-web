@@ -44,19 +44,22 @@
 
             <!-- Links -->
             <ul class="navbar-nav mr-auto ml-2">
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'homepage' %}">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Link 2</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Link 3</a>
-              </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'homepage' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'courses:courses-list' %}">Courses</a>
+                </li>
+                {% if user.is_authenticated %}
+
+                {% endif %}
             </ul>
             <!-- Links -->
             {% if user.is_authenticated %}
                 <ul class="navbar-nav ml-2 pr-3 nav-flex-icons">
+                    <li class="nav-item mt-2">
+                        <a class="nav-link" href="{% url 'courses:user-courses' %}">My Courses</a>
+                    </li>
                     <li class="nav-item dropdown mt-2">
                         <a href="#" class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-4" data-toggle="dropdown"
                           aria-haspopup="true" aria-expanded="false">

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Course Details
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+        <h1 class="mb-3">{{ course.base_title }}</h1>
+        <p>{{ course.description }}</p>
+        <a href="{% url 'courses:available-courses' slug=course.slug %}" class="btn btn-primary mt-4">Available Courses</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    My Courses
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+        {% if course_instances %}
+            <h1 class="mt-3 mb-4">My Courses</h1>
+            <div class="row">
+                {% for course_instance in course_instances  %}
+                    <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="card">
+                            <a href="{% url 'courses:course-instance-detail' course_slug=course_instance.course.slug instance_slug=course_instance.slug %}"
+                               class="stretched-link"></a>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ course_instance.sub_title }}</h5>
+                                <p class="card-text">{{ course_instance.course.description }}</p>
+                            </div><!-- card content -->
+
+                            <div class="card-footer">
+                                <p class="card-text d-inline">
+                                    <small class="text-muted">Starts: {{ course_instance.start_date }}</small>
+                                </p>
+                                <i class="fas fa-arrow-right post_arrow_img d-inline"></i>
+                            </div>
+                        </div><!-- card -->
+                    </div><!-- col-md-4 -->
+                {%  endfor %}
+                </div>
+        {% else %}
+            <h1>You don't have any courses yet.</h1>
+            <p>Choose one <a href="{% url 'courses:courses-list' %}">here</a></p>
+        {% endif %}
+    </div>
+{% endblock %}

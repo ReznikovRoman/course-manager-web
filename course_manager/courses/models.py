@@ -2,6 +2,7 @@ from django.db import models
 
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import Group
+from django.utils.text import slugify
 
 from accounts import models as account_models
 
@@ -12,6 +13,11 @@ from accounts import models as account_models
 class Course(models.Model):
     base_title = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
+    slug = models.SlugField(allow_unicode=True, unique=True)
+    
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.base_title)
+        super(Course, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.base_title} Course"
@@ -19,6 +25,7 @@ class Course(models.Model):
 
 class CourseInstance(models.Model):
     course = models.ForeignKey(Course, related_name='instances', on_delete=models.CASCADE)
+    slug = models.SlugField(allow_unicode=True, unique=True)
 
     sub_title = models.CharField(max_length=100, null=True, blank=True)
     min_mark = models.SmallIntegerField(
@@ -33,6 +40,7 @@ class CourseInstance(models.Model):
     def save(self, *args, **kwargs):
         if not self.sub_title:
             self.sub_title = self.course.base_title
+        self.slug = slugify(self.sub_title)
         super(CourseInstance, self).save(*args, **kwargs)
 
     def __str__(self):

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Course Instance Details
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+    {% if is_enrolled %}
+        <h1>You are enrolled in this course</h1>
+        <h1 class="mt-4 mb-3">{{ course_instance.sub_title }}</h1>
+        <p>{{ course_instance.course.description }}</p>
+    {% else %}
+        <h1 class="mb-3 text-center">Active Course</h1>
+        <h1 class="mb-3">{{ course_instance.sub_title }}</h1>
+        <p>{{ course_instance.course.description }}</p>
+        <a href="{% url 'courses:enroll' course_slug=course_instance.course.slug instance_slug=course_instance.slug %}" class="btn btn-primary mt-4">Enroll</a>
+    {% endif %}
+    </div>
+{% endblock %}
