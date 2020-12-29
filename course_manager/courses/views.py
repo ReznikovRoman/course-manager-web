@@ -88,7 +88,11 @@ def enroll(request, course_slug, instance_slug):
         course_instance=course_instance,
         student=request.user,
     )
-    return HttpResponseRedirect(reverse('courses:user-courses'))
+    return HttpResponseRedirect(reverse('courses:course-instance-detail',
+                                        kwargs={
+                                            'course_slug': course_instance.course.slug,
+                                            'instance_slug': course_instance.slug,
+                                        }))
 
 
 
