@@ -92,6 +92,27 @@ class PersonalAssignmentAdmin(admin.ModelAdmin):
 
     enroll_link.short_description = 'enroll_link'
 
+
+class CertificateAdmin(admin.ModelAdmin):
+    list_display = ('certificate_in', 'enroll_link')
+    list_filter = (
+        'enroll__course_instance__course__base_title',
+        'enroll__course_instance__sub_title',
+    )
+    search_fields = ('enroll__student__email', )
+    readonly_fields = ('enroll_link', )
+
+    def certificate_in(self, obj: models.Certificate):
+        return obj.enroll.course_instance.sub_title
+
+    def enroll_link(self, obj: models.Certificate):
+        return mark_safe(
+            f"""<a href="{reverse('admin:courses_enroll_change', args=(obj.enroll.pk,))}">{obj.enroll}</a>"""
+        )
+
+    enroll_link.short_description = 'enroll_link'
+
+
 ######################################################################################################################
 
 
@@ -103,7 +124,7 @@ admin.site.register(models.Mark, MarkAdmin)
 admin.site.register(models.CourseInstanceAssignment, CourseInstanceAssignmentAdmin)
 admin.site.register(models.PersonalAssignment, PersonalAssignmentAdmin)
 
-
+admin.site.register(models.Certificate, CertificateAdmin)
 
 
 

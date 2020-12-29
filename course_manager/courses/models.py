@@ -60,6 +60,7 @@ class CourseInstance(models.Model):
 class Enroll(models.Model):
     course_instance = models.ForeignKey(CourseInstance, related_name='enrolls', on_delete=models.CASCADE)
     student = models.ForeignKey('accounts.CustomUser', related_name='enrolls', on_delete=models.CASCADE)
+    is_course_finished = models.BooleanField(default=False)
 
     @property
     def average_mark(self):
@@ -114,6 +115,13 @@ class PersonalAssignment(Assignment):
 
     def __str__(self):
         return f"Personal Task: {self.title}"
+
+
+class Certificate(models.Model):
+    enroll = models.OneToOneField(Enroll, related_name='certificate', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Certificate: {self.enroll.course_instance.sub_title}"
 
 
 # ==========================  ==========================  ==========================  ==========================  === #
