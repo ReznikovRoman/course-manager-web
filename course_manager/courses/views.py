@@ -21,14 +21,10 @@ class CoursesList(generic.ListView):
 class CourseDetail(generic.DetailView):
     model = course_models.Course
 
-
-class CourseInstanceList(generic.ListView):
-    model = course_models.CourseInstance
-    template_name = 'courses/course_instance_list.html'
-
-    def get_queryset(self):
-        q = course_models.CourseInstance.objects.filter(course__slug=self.kwargs.get('slug'))
-        return q
+    def get_context_data(self, **kwargs):
+        context = super(CourseDetail, self).get_context_data(**kwargs)
+        context['available_courses'] = course_models.CourseInstance.objects.filter(course__slug=self.kwargs.get('slug'))
+        return context
 
 
 class CourseInstanceDetail(generic.DetailView):
@@ -45,7 +41,10 @@ class CourseInstanceDetail(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(CourseInstanceDetail, self).get_context_data(**kwargs)
-        context['is_enrolled'] = self.object.enrolls.filter(student=self.request.user).exists()
+        if not self.request.user.is_authenticated:
+            context['is_enrolled'] = False
+        else:
+            context['is_enrolled'] = self.object.enrolls.filter(student=self.request.user).exists()
         return context
 
 

@@ -9,6 +9,30 @@
     <div class="container">
         <h1 class="mb-3">{{ course.base_title }}</h1>
         <p>{{ course.description }}</p>
-        <a href="{% url 'courses:available-courses' slug=course.slug %}" class="btn btn-primary mt-4">Available Courses</a>
+    </div>
+
+    <div class="container">
+        <h2 class="mb-5 mt-5">Available Courses</h2>
+            <div class="row">
+            {% for course_instance in available_courses  %}
+                <div class="col-md-4 col-sm-6 col-xs-12">
+                    <div class="card">
+                        <a href="{% url 'courses:course-instance-detail' course_slug=course_instance.course.slug instance_slug=course_instance.slug %}"
+                           class="stretched-link"></a>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ course_instance.sub_title }}</h5>
+                            <p class="card-text">{{ course_instance.course.description }}</p>
+                        </div><!-- card content -->
+
+                        <div class="card-footer">
+                            <p class="card-text d-inline">
+                                <small class="text-muted">Starts: {{ course_instance.start_date }}</small>
+                            </p>
+                            <i class="fas fa-arrow-right post_arrow_img d-inline"></i>
+                        </div>
+                    </div><!-- card -->
+                </div><!-- col-md-4 -->
+            {%  endfor %}
+            </div>
     </div>
 {% endblock %}
