@@ -46,6 +46,9 @@ class CourseInstanceDetail(generic.DetailView):
             context['is_enrolled'] = False
         else:
             context['is_enrolled'] = self.object.enrolls.filter(student=self.request.user).exists()
+
+        if self.request.user.is_authenticated and context['is_enrolled']:
+            context['current_enroll'] = self.object.enrolls.get(student=self.request.user)
         return context
 
 
@@ -77,17 +80,62 @@ class DeleteEnrollView(LoginRequiredMixin, generic.DeleteView):
         )
 
 
+class PersonalAssignmentDetail(LoginRequiredMixin, generic.DetailView):
+    model = course_models.PersonalAssignment
+    template_name = 'courses/personal_assignment_detail.html'
+    context_object_name = 'personal_assignment'
+    query_pk_and_slug = True
+
+    def get_object(self, queryset=None):
+        course_instance = get_object_or_404(
+            course_models.CourseInstance,
+            course__slug=self.kwargs.get('course_slug'),
+            slug=self.kwargs.get('instance_slug'),
+        )
+        enroll = get_object_or_404(
+            course_models.Enroll,
+            course_instance=course_instance,
+            student=self.request.user,
+        )
+        assignment = get_object_or_404(
+            course_models.PersonalAssignment,
+            enroll=enroll,
+            pk=self.kwargs.get('pk')
+        )
+
+        print(assignment)
+
+        return get_object_or_404(
+            course_models.PersonalAssignment,
+            pk=self.kwargs.get('pk'),
+            enroll=enroll,
+        )
+
+
 ######################################################################################################################
 
 
 @login_required
-def enroll(request, course_slug, instance_slug):
+def enroll_view(request, course_slug, instance_slug):
     course_instance = course_models.CourseInstance.objects.get(slug=instance_slug)
+
     # Create new enroll
     new_enroll = course_models.Enroll.objects.get_or_create(
         course_instance=course_instance,
         student=request.user,
     )
+
+    # Add tasks
+    # for assignment in course_instance.course_assignments.all():
+    #     course_models.PersonalAssignment.objects.get_or_create(
+    #         title=assignment.title,
+    #         content=assignment.content,
+    #         start_date=assignment.start_date,
+    #         end_date=assignment.end_date,
+    #         is_completed=assignment.is_completed,
+    #         enroll=new_enroll[0]
+    #     )
+
     return HttpResponseRedirect(reverse('courses:course-instance-detail',
                                         kwargs={
                                             'course_slug': course_instance.course.slug,

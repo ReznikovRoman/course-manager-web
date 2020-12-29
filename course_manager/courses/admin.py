@@ -61,13 +61,12 @@ class MarkAdmin(admin.ModelAdmin):
 
     def enroll_link(self, obj: models.Mark):
         return mark_safe(
-            f"""<a href="{reverse('admin:courses_enroll_change', args=(obj.enroll.pk,))}">{obj.enroll}</a>"""
+            f"""<a href="{reverse('admin:courses_enroll_change', args=(obj.assignment.enroll.pk,))}">{obj.assignment.enroll}</a>"""
         )
 
 
 class CourseInstanceAssignmentAdmin(admin.ModelAdmin):
-    list_display = ('title', 'course_instance_link', 'start_date', 'end_date', 'is_completed')
-    ordering = ('is_completed', )
+    list_display = ('title', 'course_instance_link', 'start_date', 'end_date')
     list_filter = ('course_instance', )
     search_fields = ('course_instance__sub_title', 'course_instance__course__base_title')
 
@@ -79,11 +78,29 @@ class CourseInstanceAssignmentAdmin(admin.ModelAdmin):
     course_instance_link.short_description = 'course instance'
 
 
+class MarkInline(admin.StackedInline):
+    model = models.Mark
+
+
 class PersonalAssignmentAdmin(admin.ModelAdmin):
-    list_display = ('title', 'enroll_link', 'start_date', 'end_date', 'is_completed')
+    list_display = ('title', 'enroll_link', 'start_date', 'end_date', 'is_completed', 'mark')
     ordering = ('is_completed', )
     search_fields = ('enroll__student__email', )
     readonly_fields = ('enroll_link', )
+    list_filter = (
+        'enroll__course_instance__course__base_title',
+        'enroll__course_instance__sub_title',
+    )
+    inlines = (MarkInline, )
+
+    def title(self, obj: models.PersonalAssignment):
+        return obj.course_instance_assignment.title
+
+    def start_date(self, obj: models.PersonalAssignment):
+        return obj.course_instance_assignment.start_date
+
+    def end_date(self, obj: models.PersonalAssignment):
+        return obj.course_instance_assignment.end_date
 
     def enroll_link(self, obj: models.PersonalAssignment):
         return mark_safe(

@@ -9,9 +9,35 @@
     <div class="container">
     {% if is_enrolled %}
         <h1>You are enrolled in this course</h1>
-        <h1 class="mt-4 mb-3">{{ course_instance.sub_title }}</h1>
+        <h2 class="mt-4 mb-3">{{ course_instance.sub_title }}</h2>
         <p>{{ course_instance.course.description }}</p>
-        <a href="{% url 'courses:unenroll' course_slug=course_instance.course.slug instance_slug=course_instance.slug %}" class="btn btn-danger">Unenroll</a>
+
+        {% if course_instance.course_assignments %}
+            <h2 class="mt-4">Assignments</h2>
+            <ul>
+                {% for pa in current_enroll.personal_assignments.all %}
+                    <li>
+{#                      <a href="{% url 'courses:personal-assignment' course_slug=course_instance.course.slug instance_slug=course_instance.slug pk=pa.pk %}">#}
+                        <a href="{{ pa.get_absolute_url }}">
+                            {{ pa.course_instance_assignment.title }}
+                        </a>
+                        {% if pa.is_completed %}
+                            <i class="fas fa-check completed_icon"></i>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+
+        {% else %}
+            <h2>There are no assignments yet.</h2>
+        {% endif %}
+
+
+        <a href="{% url 'courses:unenroll' course_slug=course_instance.course.slug instance_slug=course_instance.slug %}"
+           class="btn btn-danger mt-4">
+            Unenroll
+        </a>
+
     {% else %}
         <h1 class="mb-3 text-center">Active Course</h1>
         <h1 class="mb-3">{{ course_instance.sub_title }}</h1>
