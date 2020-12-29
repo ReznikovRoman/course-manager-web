@@ -3,6 +3,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import Group
 from django.utils.text import slugify
+from django.urls import reverse
 
 from accounts import models as account_models
 
@@ -42,6 +43,13 @@ class CourseInstance(models.Model):
             self.sub_title = self.course.base_title
         self.slug = slugify(self.sub_title)
         super(CourseInstance, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('courses:course-instance-detail',
+                       kwargs={
+                           'course_slug': self.course.slug,
+                           'instance_slug': self.slug,
+                       })
 
     def __str__(self):
         if self.sub_title == self.course.base_title:

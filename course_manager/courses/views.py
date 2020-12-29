@@ -6,6 +6,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 
 from . import models as course_models
 from accounts import models as account_models
@@ -57,6 +58,25 @@ class UserCoursesInstancesList(LoginRequiredMixin, generic.ListView):
         q = course_models.CourseInstance.objects.all().filter(enrolls__student=self.request.user)
         return q
 
+
+class DeleteEnrollView(LoginRequiredMixin, generic.DeleteView):
+    model = course_models.Enroll
+    template_name = 'courses/delete_enroll.html'
+    success_url = reverse_lazy('courses:user-courses')
+
+    def get_object(self, queryset=None):
+        course_instance = get_object_or_404(
+            course_models.CourseInstance,
+            course__slug=self.kwargs.get('course_slug'),
+            slug=self.kwargs.get('instance_slug'),
+        )
+        return get_object_or_404(
+            course_models.Enroll,
+            course_instance=course_instance,
+            student=self.request.user,
+        )
+
+
 ######################################################################################################################
 
 
@@ -68,11 +88,7 @@ def enroll(request, course_slug, instance_slug):
         course_instance=course_instance,
         student=request.user,
     )
-    return HttpResponseRedirect(reverse('courses:courses-list'))
-
-
-
-
+    return HttpResponseRedirect(reverse('courses:user-courses'))
 
 
 

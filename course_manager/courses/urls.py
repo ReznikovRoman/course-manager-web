@@ -15,6 +15,7 @@ urlpatterns = [
     path('<slug:course_slug>/<slug:instance_slug>/',
          views.CourseInstanceDetail.as_view(),
          name='course-instance-detail'),
+    path('<slug:course_slug>/<slug:instance_slug>/unenroll/', views.DeleteEnrollView.as_view(), name='unenroll'),
 
 
     path('<slug:course_slug>/<slug:instance_slug>/enroll/', views.enroll, name='enroll'),

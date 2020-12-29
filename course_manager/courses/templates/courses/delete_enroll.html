@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Remove enrollment
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+        <h1>Are you sure that you want to unenroll from the {{ enroll.course_instance.sub_title }}?</h1>
+
+        <form class="mt-5" method="post">
+            {% csrf_token %}
+            <input type="submit" class="btn btn-danger" value="Yes, remove enrollment">
+            <a href="{% url 'courses:course-instance-detail' course_slug=enroll.course_instance.course.slug instance_slug=enroll.course_instance.slug %}"
+               class="btn btn-primary">
+                Cancel
+            </a>
+        </form>
+    </div>
+{% endblock %}
