@@ -50,10 +50,8 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'courses:courses-list' %}">Courses</a>
                 </li>
-                {% if user.is_authenticated %}
-
-                {% endif %}
             </ul>
+
             <!-- Links -->
             {% if user.is_authenticated %}
                 <ul class="navbar-nav ml-2 pr-3 nav-flex-icons">
@@ -62,27 +60,39 @@
                     </li>
                     <li class="nav-item dropdown mt-2">
                         <a href="#" class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-4" data-toggle="dropdown"
-                          aria-haspopup="true" aria-expanded="false">
+                            aria-haspopup="true" aria-expanded="false">
                             {% if user.profile.profile_pic %}
                                 <img class="profile_pic" src="{{ user.profile.profile_pic.url }}" alt="User Profile Picture">
                             {% else %}
                                 <img class="profile_pic" src="{% static 'course_manager/images/default_profile_pic_1.png' %}"
-                                     alt="Default Profile Picture">
+                                alt="Default Profile Picture">
                             {% endif %}
                             Profile
                         </a>
 
                         <div class="dropdown-menu dropdown-menu-right dropdown-info" aria-labelledby="navbarDropdownMenuLink-4">
-                          <a class="dropdown-item" href="{% url 'accounts:profile' %}">Settings</a>
-                          <a class="dropdown-item" href="{% url 'accounts:logout' %}">Log out</a>
+                            <a class="dropdown-item" href="{% url 'accounts:profile' %}">Settings</a>
+                            <a class="dropdown-item" href="{% url 'accounts:logout' %}">Log out</a>
                         </div>
                     </li>
 
-                        {#      Staff links     #}
-                    {% if user.is_staff %}
+                                {#      Staff links     #}
+                    {% if user|has_group:'teachers' or user.is_superuser %}
                         <li class="nav-item dropdown mt-2">
                             <a href="" class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-4" data-toggle="dropdown"
-                               aria-haspopup="true" aria-expanded="false">Admin</a>
+                               aria-haspopup="true" aria-expanded="false">Teacher</a>
+
+                            <div class="dropdown-menu dropdown-menu-right dropdown-info" aria-labelledby="navbarDropdownMenuLink-4">
+                              <a class="dropdown-item" href="{% url 'courses:instances-teacher-list' %}">Courses</a>
+                              <a class="dropdown-item" href="#">Teacher - Action 2</a>
+                              <a class="dropdown-item" href="#">Teacher - Action 3</a>
+                            </div>
+                        </li>
+                    {% endif %}
+                    {% if user|has_group:'managers' or user.is_superuser %}
+                        <li class="nav-item dropdown mt-2">
+                            <a href="" class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-4" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">Manager</a>
 
                             <div class="dropdown-menu dropdown-menu-right dropdown-info" aria-labelledby="navbarDropdownMenuLink-4">
                               <a class="dropdown-item" href="#">Action 1</a>
