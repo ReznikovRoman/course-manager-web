@@ -38,8 +38,21 @@ body{
     width: 50px;
     height: 45px;
     border-radius: 50%;
+    padding-bottom: 5px;
 }
 
 
+.teacher-area{
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+}
+
+.enroll-assignment-link{
+    color: #00a1ff;
+}
+
+.enroll-assignment-link-completed{
+    color: #00cc66;
+}
 
 

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Teacher | Personal Assignment Detail
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+        <h1>Personal Assignment: {{ personal_assignment.course_instance_assignment.title }}</h1>
+
+        <div class="personal-assignment-teacher-info mt-4">
+            <p>
+                Enroll:
+                <a href="{% url 'courses:enroll-teacher-detail' course_slug=personal_assignment.course_instance_assignment.course_instance.course.slug instance_slug=personal_assignment.course_instance_assignment.course_instance.slug enroll_pk=personal_assignment.enroll.pk %}">
+                    {{ personal_assignment.enroll.student }}
+                </a>
+            </p>
+            <p>
+                Base Assignment:
+                <a href="#">
+                    {{ personal_assignment.course_instance_assignment.title }}
+                </a>
+            </p>
+        </div>
+    </div>
+{% endblock %}
+
+

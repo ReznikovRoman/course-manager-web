@@ -8,6 +8,8 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 
+from braces.views import MultiplePermissionsRequiredMixin, GroupRequiredMixin
+
 from . import models as course_models
 from accounts import models as account_models
 
@@ -103,13 +105,87 @@ class PersonalAssignmentDetail(LoginRequiredMixin, generic.DetailView):
             pk=self.kwargs.get('pk')
         )
 
-        print(assignment)
+        return assignment
 
+
+class CourseInstanceTeacherListView(LoginRequiredMixin,
+                                    GroupRequiredMixin,
+                                    generic.ListView):
+
+    model = course_models.CourseInstance
+    group_required = 'teachers'
+    template_name = 'courses/course_instance_teacher_list.html'
+    context_object_name = 'course_instances'
+
+    def get_queryset(self):
+        return get_object_or_404(account_models.Teacher, user=self.request.user).supervised_courses.all()
+
+
+class CourseInstanceTeacherDetail(LoginRequiredMixin,
+                                  GroupRequiredMixin,
+                                  generic.DetailView):
+
+    model = course_models.CourseInstance
+    group_required = 'teachers'
+    template_name = 'courses/course_instance_teacher_detail.html'
+    context_object_name = 'course_instance'
+
+    def get_object(self, queryset=None):
         return get_object_or_404(
-            course_models.PersonalAssignment,
-            pk=self.kwargs.get('pk'),
-            enroll=enroll,
+            course_models.CourseInstance,
+            course__slug=self.kwargs.get('course_slug'),
+            slug=self.kwargs.get('instance_slug'),
         )
+
+
+class EnrollTeacherDetail(LoginRequiredMixin,
+                          GroupRequiredMixin,
+                          generic.DetailView):
+
+    model = course_models.Enroll
+    group_required = 'teachers'
+    template_name = 'courses/enroll_teacher_detail.html'
+    context_object_name = 'enroll'
+
+    def get_object(self, queryset=None):
+        course_instance = get_object_or_404(
+            course_models.CourseInstance,
+            course__slug=self.kwargs.get('course_slug'),
+            slug=self.kwargs.get('instance_slug'),
+        )
+        return get_object_or_404(
+            course_models.Enroll,
+            course_instance=course_instance,
+            pk=self.kwargs.get('enroll_pk')
+        )
+
+
+class PersonalAssignmentTeacherDetail(LoginRequiredMixin,
+                                      GroupRequiredMixin,
+                                      generic.DetailView):
+
+    model = course_models.PersonalAssignment
+    group_required = 'teachers'
+    template_name = 'courses/personal_assignment_teacher_detail.html'
+    context_object_name = 'personal_assignment'
+
+    def get_object(self, queryset=None):
+        course_instance = get_object_or_404(
+            course_models.CourseInstance,
+            course__slug=self.kwargs.get('course_slug'),
+            slug=self.kwargs.get('instance_slug'),
+        )
+        enroll = get_object_or_404(
+            course_models.Enroll,
+            course_instance=course_instance,
+            pk=self.kwargs.get('enroll_pk'),
+        )
+        assignment = get_object_or_404(
+            course_models.PersonalAssignment,
+            enroll=enroll,
+            pk=self.kwargs.get('assignment_pk')
+        )
+        return assignment
 
 
 ######################################################################################################################
@@ -124,17 +200,6 @@ def enroll_view(request, course_slug, instance_slug):
         course_instance=course_instance,
         student=request.user,
     )
-
-    # Add tasks
-    # for assignment in course_instance.course_assignments.all():
-    #     course_models.PersonalAssignment.objects.get_or_create(
-    #         title=assignment.title,
-    #         content=assignment.content,
-    #         start_date=assignment.start_date,
-    #         end_date=assignment.end_date,
-    #         is_completed=assignment.is_completed,
-    #         enroll=new_enroll[0]
-    #     )
 
     return HttpResponseRedirect(reverse('courses:course-instance-detail',
                                         kwargs={

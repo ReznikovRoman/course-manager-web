@@ -150,7 +150,7 @@ class Profile(models.Model):
 # ============== STAFF ============================= #################################################################
 
 class StaffWorker(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     salary = models.IntegerField(
         null=True,
         blank=True,

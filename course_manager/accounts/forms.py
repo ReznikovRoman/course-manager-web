@@ -34,7 +34,7 @@ class AddressForm(forms.ModelForm):
 class UpdateProfileForm(forms.ModelForm):
     def clean_date_of_birth(self):
         data = self.cleaned_data['date_of_birth']
-        if data > datetime.date.today():
+        if data and data > datetime.date.today():
             raise ValidationError(_('Invalid date - date of birth in the future'))
         return data
 

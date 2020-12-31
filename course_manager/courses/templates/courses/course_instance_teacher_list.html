@@ -1,23 +1,20 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    Course Details
+    Teacher | Courses
 {% endblock %}
 
 
 {% block content %}
     <div class="container">
-        <h1 class="mb-3">{{ course.base_title }}</h1>
-        <p>{{ course.description }}</p>
-    </div>
+    {% if course_instances %}
+        <h1 class="mb-5">Courses <span class="text-muted">(Teacher)</span></h1>
 
-    <div class="container">
-        <h2 class="mb-5 mt-5">Available Courses</h2>
         <div class="row">
-            {% for course_instance in available_courses  %}
+            {% for course_instance in course_instances  %}
                 <div class="col-md-4 col-sm-6 col-xs-12">
                     <div class="card">
-                        <a href="{% url 'courses:course-instance-detail' course_slug=course_instance.course.slug instance_slug=course_instance.slug %}"
+                        <a href="{% url 'courses:course-instance-teacher-detail' course_slug=course_instance.course.slug instance_slug=course_instance.slug %}"
                            class="stretched-link"></a>
                         <div class="card-body">
                             <h5 class="card-title">{{ course_instance.sub_title }}</h5>
@@ -34,5 +31,8 @@
                 </div><!-- col-md-4 -->
             {%  endfor %}
         </div>
+    {% else %}
+        <p>You do not teach any courses</p>
+    {% endif %}
     </div>
 {% endblock %}

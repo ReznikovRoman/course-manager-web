@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Teacher | Course
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+        <h1>{{ course_instance.sub_title }} <span class="text-muted">(Teacher)</span></h1>
+        <p class="mb-5">{{ course_instance.course.description }}</p>
+
+        <div class="assignments-list">
+            {% if course_instance.course_assignments %}
+                <h3>Course Assignments</h3>
+                <ul>
+                    {% for assignment in course_instance.course_assignments.all %}
+                        <li><a href="#">{{ assignment.title }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <h3>There are no assignments in the course yet.</h3>
+            {% endif %}
+        </div>
+
+        <div class="enrolls-list">
+            {% if course_instance.enrolls %}
+                <h3>Enrolls</h3>
+                <ul>
+                {% for enroll in course_instance.enrolls.all %}
+                    <li>
+                        <a href="{% url 'courses:enroll-teacher-detail' course_slug=course_instance.course.slug instance_slug=course_instance.slug enroll_pk=enroll.pk %}">
+                            {{ enroll.student }}
+                        </a>
+                    </li>
+                {% endfor %}
+
+                </ul>
+            {% else %}
+                <h3>There are no students in the course yet.</h3>
+            {% endif %}
+        </div>
+
+        <div class="teacher-area">
+            <a href="#" class="btn btn-primary">Add Assignment</a>
+        </div>
+
+
+    </div>
+{% endblock %}
+
+
