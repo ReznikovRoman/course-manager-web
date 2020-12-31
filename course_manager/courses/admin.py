@@ -55,16 +55,6 @@ class EnrollAdmin(admin.ModelAdmin):
     ordering = ()
 
 
-class MarkAdmin(admin.ModelAdmin):
-    list_display = ('value', 'enroll_link',)
-    search_fields = ('enroll__course_instance__sub_title', 'enroll__student__email')
-
-    def enroll_link(self, obj: models.Mark):
-        return mark_safe(
-            f"""<a href="{reverse('admin:courses_enroll_change', args=(obj.assignment.enroll.pk,))}">{obj.assignment.enroll}</a>"""
-        )
-
-
 class CourseInstanceAssignmentAdmin(admin.ModelAdmin):
     list_display = ('title', 'course_instance_link', 'start_date', 'end_date')
     list_filter = ('course_instance', )
@@ -78,12 +68,8 @@ class CourseInstanceAssignmentAdmin(admin.ModelAdmin):
     course_instance_link.short_description = 'course instance'
 
 
-class MarkInline(admin.StackedInline):
-    model = models.Mark
-
-
 class PersonalAssignmentAdmin(admin.ModelAdmin):
-    list_display = ('title', 'enroll_link', 'start_date', 'end_date', 'is_completed', 'mark')
+    list_display = ('title', 'enroll_link', 'start_date', 'end_date', 'is_completed', 'grade')
     ordering = ('is_completed', )
     search_fields = ('enroll__student__email', )
     readonly_fields = ('enroll_link', )
@@ -91,7 +77,6 @@ class PersonalAssignmentAdmin(admin.ModelAdmin):
         'enroll__course_instance__course__base_title',
         'enroll__course_instance__sub_title',
     )
-    inlines = (MarkInline, )
 
     def title(self, obj: models.PersonalAssignment):
         return obj.course_instance_assignment.title
@@ -136,7 +121,6 @@ class CertificateAdmin(admin.ModelAdmin):
 admin.site.register(models.Course, CourseAdmin)
 admin.site.register(models.CourseInstance, CourseInstanceAdmin)
 admin.site.register(models.Enroll, EnrollAdmin)
-admin.site.register(models.Mark, MarkAdmin)
 
 admin.site.register(models.CourseInstanceAssignment, CourseInstanceAssignmentAdmin)
 admin.site.register(models.PersonalAssignment, PersonalAssignmentAdmin)

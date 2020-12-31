@@ -15,6 +15,7 @@ from . import models as course_models
 from accounts import models as account_models
 from . import forms
 
+
 ##################################################################################################################
 
 
@@ -182,7 +183,6 @@ class PersonalAssignmentDetail(LoginRequiredMixin, generic.View):
 class CourseInstanceTeacherListView(LoginRequiredMixin,
                                     GroupRequiredMixin,
                                     generic.ListView):
-
     model = course_models.CourseInstance
     group_required = 'teachers'
     template_name = 'courses/course_instance_teacher_list.html'
@@ -195,7 +195,6 @@ class CourseInstanceTeacherListView(LoginRequiredMixin,
 class CourseInstanceTeacherDetail(LoginRequiredMixin,
                                   GroupRequiredMixin,
                                   generic.DetailView):
-
     model = course_models.CourseInstance
     group_required = 'teachers'
     template_name = 'courses/course_instance_teacher_detail.html'
@@ -212,7 +211,6 @@ class CourseInstanceTeacherDetail(LoginRequiredMixin,
 class EnrollTeacherDetail(LoginRequiredMixin,
                           GroupRequiredMixin,
                           generic.DetailView):
-
     model = course_models.Enroll
     group_required = 'teachers'
     template_name = 'courses/enroll_teacher_detail.html'
@@ -232,22 +230,8 @@ class EnrollTeacherDetail(LoginRequiredMixin,
 
 
 class PersonalAssignmentTeacherDisplay(LoginRequiredMixin,
-                                      GroupRequiredMixin,
-                                      generic.DetailView):
-
-    pass  # TODO
-
-
-class PersonalAssignmentTeacherEvaluate(LoginRequiredMixin,
-                                        GroupRequiredMixin,
-                                        SingleObjectMixin,
-                                        generic.FormView):
-    pass  # TODO
-
-
-class PersonalAssignmentTeacherDetail(LoginRequiredMixin,
-                                      GroupRequiredMixin,
-                                      generic.DetailView):
+                                       GroupRequiredMixin,
+                                       generic.DetailView):
 
     model = course_models.PersonalAssignment
     group_required = 'teachers'
@@ -265,12 +249,104 @@ class PersonalAssignmentTeacherDetail(LoginRequiredMixin,
             course_instance=course_instance,
             pk=self.kwargs.get('enroll_pk'),
         )
+        self.assignment = get_object_or_404(
+            course_models.PersonalAssignment,
+            enroll=enroll,
+            pk=self.kwargs.get('assignment_pk')
+        )
+        return self.assignment
+
+    def get_context_data(self, **kwargs):
+        context = super(PersonalAssignmentTeacherDisplay, self).get_context_data(**kwargs)
+        context['form'] = forms.PersonalAssignmentEvaluationForm(
+            initial={
+                'grade': self.assignment.grade,
+                'is_completed': self.assignment.is_completed,
+            }
+        )
+        return context
+
+
+class PersonalAssignmentTeacherEvaluate(LoginRequiredMixin,
+                                        GroupRequiredMixin,
+                                        SingleObjectMixin,
+                                        generic.FormView):
+
+    template_name = 'courses/personal_assignment_teacher_detail.html'
+    form_class = forms.PersonalAssignmentEvaluationForm
+    model = course_models.PersonalAssignment
+    group_required = 'teachers'
+    context_object_name = 'personal_assignment'
+
+    def post(self, request, *args, **kwargs):
+        course_instance = get_object_or_404(
+            course_models.CourseInstance,
+            course__slug=self.kwargs.get('course_slug'),
+            slug=self.kwargs.get('instance_slug'),
+        )
+        enroll = get_object_or_404(
+            course_models.Enroll,
+            course_instance=course_instance,
+            pk=self.kwargs.get('enroll_pk'),
+        )
         assignment = get_object_or_404(
             course_models.PersonalAssignment,
             enroll=enroll,
             pk=self.kwargs.get('assignment_pk')
         )
-        return assignment
+        self.object = assignment
+        print(self.object.course_instance_assignment.course_instance)
+        return super(PersonalAssignmentTeacherEvaluate, self).post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        course_instance = get_object_or_404(
+            course_models.CourseInstance,
+            course__slug=self.kwargs.get('course_slug'),
+            slug=self.kwargs.get('instance_slug'),
+        )
+        enroll = get_object_or_404(
+            course_models.Enroll,
+            course_instance=course_instance,
+            pk=self.kwargs.get('enroll_pk'),
+        )
+        personal_assignment = get_object_or_404(
+            course_models.PersonalAssignment,
+            enroll=enroll,
+            pk=self.kwargs.get('assignment_pk')
+        )
+
+        mark_form = forms.PersonalAssignmentEvaluationForm(data=self.request.POST)
+        if mark_form.is_valid():
+            personal_assignment.grade = mark_form.data['grade']
+            if self.request.POST.get('is_completed', None):
+                personal_assignment.is_completed = True
+            else:
+                personal_assignment.is_completed = False
+            personal_assignment.save()
+        return super(PersonalAssignmentTeacherEvaluate, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('courses:personal-assignment-teacher-detail',
+                       kwargs={
+                           'course_slug': self.kwargs.get('course_slug'),
+                           'instance_slug': self.kwargs.get('instance_slug'),
+                           'enroll_pk': self.kwargs.get('enroll_pk'),
+                           'assignment_pk': self.kwargs.get('assignment_pk'),
+                       })
+
+
+class PersonalAssignmentTeacherDetail(LoginRequiredMixin,
+                                      GroupRequiredMixin,
+                                      generic.DetailView):
+    group_required = 'teachers'
+
+    def get(self, request, *args, **kwargs):
+        view = PersonalAssignmentTeacherDisplay.as_view()
+        return view(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        view = PersonalAssignmentTeacherEvaluate.as_view()
+        return view(request, *args, **kwargs)
 
 
 ######################################################################################################################
@@ -291,19 +367,3 @@ def enroll_view(request, course_slug, instance_slug):
                                             'course_slug': course_instance.course.slug,
                                             'instance_slug': course_instance.slug,
                                         }))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

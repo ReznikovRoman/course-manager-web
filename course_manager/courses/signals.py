@@ -46,12 +46,4 @@ def update_course_assignment(sender, instance: models.CourseInstanceAssignment, 
                     personal_assignment.save()
 
 
-@receiver(post_save, sender=models.Mark)
-def add_new_mark(sender, instance: models.Mark, created: bool, **kwargs):
-    if created:
-        personal_assignment = instance.assignment
-        personal_assignment.is_completed = True
-        personal_assignment.save()
-
-
 

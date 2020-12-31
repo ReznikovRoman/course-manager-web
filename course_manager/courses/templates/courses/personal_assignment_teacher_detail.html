@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load bootstrap4 %}
 
 {% block title %}
     Teacher | Personal Assignment Detail
@@ -34,6 +35,14 @@
                     <a href="/media/{{ personal_assignment.answer_file }}">{{ personal_assignment.answer_file.name }}</a>
                 {% endif %}
             </p>
+
+            <form method="POST">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                {% buttons %}
+                    <button type="submit" class="btn btn-primary">Save</button>
+                {% endbuttons %}
+            </form>
         </div>
     </div>
 {% endblock %}

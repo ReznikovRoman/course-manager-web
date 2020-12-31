@@ -68,7 +68,8 @@ class Enroll(models.Model):
 
     @property
     def average_mark(self):
-        marks = [m['mark__value'] for m in self.personal_assignments.filter(enroll=self).filter(is_completed=True).values('mark__value')]
+        print(self.personal_assignments.filter(enroll=self).filter(is_completed=True).values('grade'))
+        marks = [m['grade'] for m in self.personal_assignments.filter(enroll=self).filter(is_completed=True).values('grade')]
         try:
             return round(float(sum(marks) / len(marks)), 2)
         except ZeroDivisionError:
@@ -108,6 +109,15 @@ class PersonalAssignment(models.Model):
     answer_field = models.TextField(null=True, blank=True)
     answer_file = models.FileField(null=True, blank=True, upload_to=student_answers_directory_path)
     is_completed = models.BooleanField(default=False)
+    grade = models.SmallIntegerField(
+        blank=True,
+        null=True,
+        default=0,
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(100),
+        ]
+    )
 
     def get_absolute_url(self):
         return reverse('courses:personal-assignment',
@@ -119,20 +129,6 @@ class PersonalAssignment(models.Model):
 
     def __str__(self):
         return f"Personal Task: {self.course_instance_assignment.title}"
-
-
-class Mark(models.Model):
-    assignment = models.OneToOneField(PersonalAssignment, related_name='mark', on_delete=models.CASCADE)
-
-    value = models.SmallIntegerField(
-        validators=[
-            MinValueValidator(0),
-            MaxValueValidator(100),
-        ]
-    )
-
-    def __str__(self):
-        return f"Mark: {self.value}"
 
 
 class Certificate(models.Model):
