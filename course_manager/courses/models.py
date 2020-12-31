@@ -11,6 +11,10 @@ from accounts import models as account_models
 #####################################################################################################################
 
 
+def student_answers_directory_path(instance, filename):
+    return f"assignments/enroll_{instance.enroll.pk}/{filename}"
+
+
 class Course(models.Model):
     base_title = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
@@ -101,6 +105,8 @@ class PersonalAssignment(models.Model):
                                                    related_name='personal_assignments',
                                                    on_delete=models.CASCADE)
     enroll = models.ForeignKey(Enroll, related_name='personal_assignments', on_delete=models.CASCADE)
+    answer_field = models.TextField(null=True, blank=True)
+    answer_file = models.FileField(null=True, blank=True, upload_to=student_answers_directory_path)
     is_completed = models.BooleanField(default=False)
 
     def get_absolute_url(self):

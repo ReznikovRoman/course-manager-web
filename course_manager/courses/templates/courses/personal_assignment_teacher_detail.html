@@ -22,6 +22,18 @@
                     {{ personal_assignment.course_instance_assignment.title }}
                 </a>
             </p>
+            <p>
+                Student's Solution:
+                {% if personal_assignment.answer_field %}
+                    <pre>{{ personal_assignment.answer_field }}</pre>
+                {% endif %}
+            </p>
+            <p>
+                Attached File (Optional):
+                {% if personal_assignment.answer_file %}
+                    <a href="/media/{{ personal_assignment.answer_file }}">{{ personal_assignment.answer_file.name }}</a>
+                {% endif %}
+            </p>
         </div>
     </div>
 {% endblock %}

@@ -1,8 +1,9 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
 from django.http import HttpResponseRedirect, HttpResponse
+from django.views.generic.detail import SingleObjectMixin, SingleObjectTemplateResponseMixin
 
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
@@ -12,6 +13,7 @@ from braces.views import MultiplePermissionsRequiredMixin, GroupRequiredMixin
 
 from . import models as course_models
 from accounts import models as account_models
+from . import forms
 
 ##################################################################################################################
 
@@ -82,7 +84,7 @@ class DeleteEnrollView(LoginRequiredMixin, generic.DeleteView):
         )
 
 
-class PersonalAssignmentDetail(LoginRequiredMixin, generic.DetailView):
+class PersonalAssignmentDisplay(LoginRequiredMixin, generic.DetailView):
     model = course_models.PersonalAssignment
     template_name = 'courses/personal_assignment_detail.html'
     context_object_name = 'personal_assignment'
@@ -99,13 +101,82 @@ class PersonalAssignmentDetail(LoginRequiredMixin, generic.DetailView):
             course_instance=course_instance,
             student=self.request.user,
         )
-        assignment = get_object_or_404(
+        self.current_assignment = get_object_or_404(
             course_models.PersonalAssignment,
             enroll=enroll,
             pk=self.kwargs.get('pk')
         )
 
-        return assignment
+        return self.current_assignment
+
+    def get_context_data(self, **kwargs):
+        context = super(PersonalAssignmentDisplay, self).get_context_data(**kwargs)
+        context['form'] = forms.PersonalAssignmentForm(
+            initial={
+                'answer_field': self.current_assignment.answer_field,
+                'answer_file': self.current_assignment.answer_file,
+            }
+        )
+        return context
+
+
+class PersonalAssignmentAnswer(LoginRequiredMixin, SingleObjectMixin, generic.FormView):
+    template_name = 'courses/personal_assignment_detail.html'
+    form_class = forms.PersonalAssignmentForm
+    model = course_models.PersonalAssignment
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super(PersonalAssignmentAnswer, self).post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        course_instance = get_object_or_404(
+            course_models.CourseInstance,
+            course__slug=self.kwargs.get('course_slug'),
+            slug=self.kwargs.get('instance_slug'),
+        )
+        enroll = get_object_or_404(
+            course_models.Enroll,
+            course_instance=course_instance,
+            student=self.request.user,
+        )
+        personal_assignment = get_object_or_404(
+            course_models.PersonalAssignment,
+            enroll=enroll,
+            pk=self.kwargs.get('pk')
+        )
+
+        assignment_form = forms.PersonalAssignmentForm(self.request.POST)
+        personal_assignment.answer_field = assignment_form.data['answer_field']
+
+        try:
+            answer_file = self.request.FILES['answer_file']
+        except KeyError:
+            answer_file = None
+
+        if not personal_assignment.answer_file or answer_file:
+            personal_assignment.answer_file = answer_file
+        if self.request.POST.getlist('answer_file-clear'):
+            personal_assignment.answer_file = None
+
+        personal_assignment.save()
+        return super(PersonalAssignmentAnswer, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('courses:personal-assignment', kwargs={'course_slug': self.kwargs.get('course_slug'),
+                                                              'instance_slug': self.kwargs.get('instance_slug'),
+                                                              'pk': self.kwargs.get('pk')})
+
+
+class PersonalAssignmentDetail(LoginRequiredMixin, generic.View):
+
+    def get(self, request, *args, **kwargs):
+        view = PersonalAssignmentDisplay.as_view()
+        return view(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        view = PersonalAssignmentAnswer.as_view()
+        return view(request, *args, **kwargs)
 
 
 class CourseInstanceTeacherListView(LoginRequiredMixin,
@@ -158,6 +229,20 @@ class EnrollTeacherDetail(LoginRequiredMixin,
             course_instance=course_instance,
             pk=self.kwargs.get('enroll_pk')
         )
+
+
+class PersonalAssignmentTeacherDisplay(LoginRequiredMixin,
+                                      GroupRequiredMixin,
+                                      generic.DetailView):
+
+    pass  # TODO
+
+
+class PersonalAssignmentTeacherEvaluate(LoginRequiredMixin,
+                                        GroupRequiredMixin,
+                                        SingleObjectMixin,
+                                        generic.FormView):
+    pass  # TODO
 
 
 class PersonalAssignmentTeacherDetail(LoginRequiredMixin,

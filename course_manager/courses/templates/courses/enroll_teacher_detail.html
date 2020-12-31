@@ -14,8 +14,8 @@
             <p>
                 Course: <a href="{% url 'courses:course-instance-teacher-detail' course_slug=enroll.course_instance.course.slug instance_slug=enroll.course_instance.slug %}">{{ enroll.course_instance }}</a>
             </p>
-            <p>First Name: {{ enroll.student.first_name }}</p>
-            <p>Last Name: {{ enroll.student.last_name }}</p>
+            <p>First Name: {{ enroll.student.profile.first_name }}</p>
+            <p>Last Name: {{ enroll.student.profile.last_name }}</p>
             <p>Average Mark: {{ enroll.average_mark }}</p>
         </div>
 
