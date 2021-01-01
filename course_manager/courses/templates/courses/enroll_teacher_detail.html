@@ -25,7 +25,7 @@
             {% for personal_assignment in enroll.personal_assignments.all %}
                 <p>
                     <a href="{% url 'courses:personal-assignment-teacher-detail' course_slug=enroll.course_instance.course.slug instance_slug=enroll.course_instance.slug enroll_pk=enroll.pk assignment_pk=personal_assignment.pk %}"
-                       class="enroll-assignment-link{% if personal_assignment.is_completed %}-completed{% endif %}">
+                       class="enroll-assignment-link{% if personal_assignment.is_completed %}-completed{% elif personal_assignment.is_deadline_missed %}-deadline{% endif %}">
                         {{ personal_assignment.course_instance_assignment.title }}
                     </a>
                     {% if personal_assignment.is_completed %}

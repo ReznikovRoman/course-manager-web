@@ -8,8 +8,7 @@
 {% block content %}
     <div class="container">
     {% if is_enrolled %}
-        <h1>You are enrolled in this course</h1>
-        <h2 class="mt-4 mb-3">{{ course_instance.sub_title }}</h2>
+        <h1 class="mt-4 mb-3">{{ course_instance.sub_title }}</h1>
         <p>{{ course_instance.course.description }}</p>
 
         {% if course_instance.course_assignments.all %}
