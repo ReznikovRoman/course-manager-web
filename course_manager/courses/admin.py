@@ -1,5 +1,8 @@
 from django.contrib import admin
 
+from django.db import models as db_models
+from django.db.models import Func, F, Sum, Avg, Q
+
 from django.utils.safestring import mark_safe
 from django.urls import reverse
 
@@ -49,10 +52,21 @@ class EnrollAdmin(admin.ModelAdmin):
     search_fields = ('student__email', )
     readonly_fields = ('average_mark', )
 
+    list_filter = ('course_instance', )
     filter_horizontal = ()
-    list_filter = ()
     fieldsets = ()
     ordering = ()
+
+    def get_queryset(self, request):
+        qs = super(EnrollAdmin, self).get_queryset(request)
+        qs = qs.annotate(
+            _average_mark=Avg('personal_assignments__grade', filter=Q(personal_assignments__is_completed=True)),
+        )
+        return qs
+
+    def average_mark(self, obj):
+        return obj.average_mark
+    average_mark.admin_order_field = '_average_mark'
 
 
 class CourseInstanceAssignmentAdmin(admin.ModelAdmin):
