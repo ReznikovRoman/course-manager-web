@@ -1,6 +1,9 @@
 from django import forms
-
 from django.core.exceptions import ValidationError
+
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
+from datetime import datetime
+from tempus_dominus.widgets import DateTimePicker
 
 from . import models
 
@@ -40,6 +43,46 @@ class PersonalAssignmentEvaluationForm(forms.ModelForm):
         self.fields['is_completed'].label = 'Mark as completed'
 
 
+class CourseAssignmentForm(forms.ModelForm):
+
+    def clean_end_date(self):
+        data = self.cleaned_data['end_date']
+        if data is not None and self.cleaned_data['start_date'] is not None and data < self.cleaned_data['start_date']:
+            raise ValidationError('Invalid date - End date in the past')
+        return data
+
+    class Meta:
+        model = models.CourseInstanceAssignment
+        fields = ('title', 'content', 'start_date', 'end_date')
+        widgets = {
+            'content': CKEditorUploadingWidget(),
+            'start_date': DateTimePicker(
+                attrs={
+                    'append': 'fa fa-calendar',
+                    'icon_toggle': True,
+                },
+                options={
+                    'showTodayButton': True,
+                    'sideBySide': True,
+                    'calendarWeeks': True,
+                }
+            ),
+            'end_date': DateTimePicker(
+                attrs={
+                    'append': 'fa fa-calendar',
+                    'icon_toggle': True,
+                },
+                options={
+                    'showTodayButton': True,
+                    'sideBySide': True,
+                    'calendarWeeks': True,
+                }
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(CourseAssignmentForm, self).__init__(*args, **kwargs)
+        self.fields['start_date'].initial = datetime.now()
 
 
 

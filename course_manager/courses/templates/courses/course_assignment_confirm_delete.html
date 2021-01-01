@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Teacher | Delete Assignment
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+        <h2>Are you sure that you want to delete assignment: '{{ course_assignment.title }}'?</h2>
+        <p>Deadline: <span class="text-muted">{{ course_assignment.end_date }}</span></p>
+        <p>Content: {{ course_assignment.content|safe }}</p>
+
+        <hr>
+        <form class="mt-4" method="POST">
+            {% csrf_token %}
+            <input type="submit" value="Confirm Delete" class="btn btn-danger">
+            <a href="{% url 'courses:course-assignment-teacher-detail' course_slug=course_assignment.course_instance.course.slug instance_slug=course_assignment.course_instance.slug assignment_pk=course_assignment.pk %}"
+               class="btn btn-primary ml-2">
+                Cancel
+            </a>
+        </form>
+    </div>
+{% endblock %}
+
+
+
+

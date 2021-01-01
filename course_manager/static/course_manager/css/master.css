@@ -55,4 +55,18 @@ body{
     color: #00cc66;
 }
 
+.enroll-assignment-link-deadline{
+    color: #ee2222;
+}
 
+.grade-green{
+    color: #00cc66;
+}
+
+.grade-red{
+    color: #ee2222;
+}
+
+.missed-deadline{
+    color: #ee2222 !important;
+}

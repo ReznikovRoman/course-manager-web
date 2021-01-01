@@ -295,7 +295,6 @@ class PersonalAssignmentTeacherEvaluate(LoginRequiredMixin,
             pk=self.kwargs.get('assignment_pk')
         )
         self.object = assignment
-        print(self.object.course_instance_assignment.course_instance)
         return super(PersonalAssignmentTeacherEvaluate, self).post(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -347,6 +346,108 @@ class PersonalAssignmentTeacherDetail(LoginRequiredMixin,
     def post(self, request, *args, **kwargs):
         view = PersonalAssignmentTeacherEvaluate.as_view()
         return view(request, *args, **kwargs)
+
+
+class CourseAssignmentTeacherDetail(LoginRequiredMixin,
+                                    GroupRequiredMixin,
+                                    generic.DetailView):
+
+    group_required = 'teachers'
+    model = course_models.CourseInstanceAssignment
+    template_name = 'courses/course_assignment_teacher_detail.html'
+    context_object_name = 'course_assignment'
+
+    def get_object(self, queryset=None):
+        course_instance = get_object_or_404(
+            course_models.CourseInstance,
+            course__slug=self.kwargs.get('course_slug'),
+            slug=self.kwargs.get('instance_slug'),
+        )
+        return get_object_or_404(
+            course_models.CourseInstanceAssignment,
+            course_instance=course_instance,
+            pk=self.kwargs.get('assignment_pk')
+        )
+
+
+class CourseAssignmentTeacherCreateView(LoginRequiredMixin,
+                                        GroupRequiredMixin,
+                                        generic.CreateView):
+    group_required = 'teachers'
+    model = course_models.CourseInstanceAssignment
+    template_name = 'courses/course_instance_assignment_form.html'
+    context_object_name = 'course_assignment'
+    form_class = forms.CourseAssignmentForm
+    
+    def form_valid(self, form):
+        course_instance = get_object_or_404(
+            course_models.CourseInstance,
+            course__slug=self.kwargs.get('course_slug'),
+            slug=self.kwargs.get('instance_slug'),
+        )
+        self.object = form.save(commit=False)
+        self.object.course_instance = course_instance
+        return super(CourseAssignmentTeacherCreateView, self).form_valid(form)
+
+
+class CourseAssignmentTeacherUpdateView(LoginRequiredMixin,
+                                        GroupRequiredMixin,
+                                        generic.UpdateView):
+    group_required = 'teachers'
+    model = course_models.CourseInstanceAssignment
+    template_name = 'courses/course_instance_assignment_form.html'
+    context_object_name = 'course_assignment'
+    form_class = forms.CourseAssignmentForm
+
+    def get_object(self, queryset=None):
+        course_instance = get_object_or_404(
+            course_models.CourseInstance,
+            course__slug=self.kwargs.get('course_slug'),
+            slug=self.kwargs.get('instance_slug'),
+        )
+        return get_object_or_404(
+            course_models.CourseInstanceAssignment,
+            course_instance=course_instance,
+            pk=self.kwargs.get('assignment_pk')
+        )
+
+    def get_success_url(self):
+        return reverse(
+            'courses:course-assignment-teacher-detail',
+            kwargs={'course_slug': self.kwargs.get('course_slug'),
+                    'instance_slug': self.kwargs.get('instance_slug'),
+                    'assignment_pk': self.kwargs.get('assignment_pk')}
+        )
+
+
+class CourseAssignmentTeacherDeleteView(LoginRequiredMixin,
+                                        GroupRequiredMixin,
+                                        generic.DeleteView):
+    group_required = 'teachers'
+    model = course_models.CourseInstanceAssignment
+    template_name = 'courses/course_assignment_confirm_delete.html'
+    context_object_name = 'course_assignment'
+
+    def get_object(self, queryset=None):
+        course_instance = get_object_or_404(
+            course_models.CourseInstance,
+            course__slug=self.kwargs.get('course_slug'),
+            slug=self.kwargs.get('instance_slug'),
+        )
+        return get_object_or_404(
+            course_models.CourseInstanceAssignment,
+            course_instance=course_instance,
+            pk=self.kwargs.get('assignment_pk')
+        )
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'courses:course-instance-teacher-detail',
+            kwargs={
+                'course_slug': self.kwargs.get('course_slug'),
+                'instance_slug': self.kwargs.get('instance_slug'),
+            }
+        )
 
 
 ######################################################################################################################

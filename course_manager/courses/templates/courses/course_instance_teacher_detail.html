@@ -10,12 +10,16 @@
         <h1>{{ course_instance.sub_title }} <span class="text-muted">(Teacher)</span></h1>
         <p class="mb-5">{{ course_instance.course.description }}</p>
 
-        <div class="assignments-list">
-            {% if course_instance.course_assignments %}
+        <div class="assignments-list mb-4">
+            {% if course_instance.course_assignments.all %}
                 <h3>Course Assignments</h3>
                 <ul>
                     {% for assignment in course_instance.course_assignments.all %}
-                        <li><a href="#">{{ assignment.title }}</a></li>
+                        <li>
+                            <a href="{% url 'courses:course-assignment-teacher-detail' course_slug=course_instance.course.slug instance_slug=course_instance.slug assignment_pk=assignment.pk %}">
+                                {{ assignment.title }}
+                            </a>
+                        </li>
                     {% endfor %}
                 </ul>
             {% else %}
@@ -42,7 +46,10 @@
         </div>
 
         <div class="teacher-area">
-            <a href="#" class="btn btn-primary">Add Assignment</a>
+            <a href="{% url 'courses:course-assignment-teacher-create' course_slug=course_instance.course.slug instance_slug=course_instance.slug %}"
+               class="btn btn-primary">
+                Add Assignment
+            </a>
         </div>
 
 

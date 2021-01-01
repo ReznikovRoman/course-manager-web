@@ -18,7 +18,8 @@
                 {% for pa in current_enroll.personal_assignments.all %}
                     <li>
                         <a href="{{ pa.get_absolute_url }}"
-                           class="enroll-assignment-link{% if pa.is_completed %}-completed{% endif %}">
+                           class="enroll-assignment-link{% if pa.is_completed %}-completed
+                           {% elif pa.is_deadline_missed and not pa.is_completed %} missed-deadline{% endif %}">
                             {{ pa.course_instance_assignment.title }}
                         </a>
                         {% if pa.is_completed %}
@@ -31,6 +32,8 @@
         {% else %}
             <h2 class="mt-4">There are no assignments yet.</h2>
         {% endif %}
+
+        <h5>Average Grade: <span class="grade{% if current_enroll.average_mark > current_enroll.course_instance.min_mark %}-green{% else %}-red{% endif %}">{{ current_enroll.average_mark }}</span></h5>
 
 
         <a href="{% url 'courses:unenroll' course_slug=course_instance.course.slug instance_slug=course_instance.slug %}"

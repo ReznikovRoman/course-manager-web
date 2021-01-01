@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'courses.apps.CoursesConfig',
 
     'django_cleanup.apps.CleanupConfig',
+    'crispy_forms',
+    'tempus_dominus',
 ]
 
 MIDDLEWARE = [
@@ -169,7 +171,7 @@ CKEDITOR_CONFIGS = {
     'default': {
         'skin': 'moono',
         'width': 'auto',
-        'height': '550px',
+        'height': '400px',
         # 'skin': 'office2013',
         'toolbar_Basic': [
             ['Source', '-', 'Bold', 'Italic']
@@ -241,6 +243,14 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD_ESL')
+
+
+# CRISPY FORMS
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+
+
+
 
 
 

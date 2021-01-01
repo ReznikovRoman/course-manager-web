@@ -4,6 +4,10 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import Group
 from django.utils.text import slugify
 from django.urls import reverse
+from django.shortcuts import get_object_or_404
+
+from ckeditor_uploader.fields import RichTextUploadingField
+from django.utils import timezone
 
 from accounts import models as account_models
 
@@ -68,7 +72,6 @@ class Enroll(models.Model):
 
     @property
     def average_mark(self):
-        print(self.personal_assignments.filter(enroll=self).filter(is_completed=True).values('grade'))
         marks = [m['grade'] for m in self.personal_assignments.filter(enroll=self).filter(is_completed=True).values('grade')]
         try:
             return round(float(sum(marks) / len(marks)), 2)
@@ -85,9 +88,9 @@ class Enroll(models.Model):
 
 
 class Assignment(models.Model):
-    title = models.CharField(max_length=100, null=True, blank=True)
-    content = models.TextField(null=True, blank=True)
-    start_date = models.DateTimeField(null=True, blank=True)
+    title = models.CharField(max_length=100, )
+    content = RichTextUploadingField()
+    start_date = models.DateTimeField()
     end_date = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
@@ -96,6 +99,14 @@ class Assignment(models.Model):
 
 class CourseInstanceAssignment(Assignment):
     course_instance = models.ForeignKey(CourseInstance, related_name='course_assignments', on_delete=models.CASCADE)
+
+    def get_absolute_url(self):
+        return reverse(
+            'courses:course-assignment-teacher-detail',
+            kwargs={'course_slug': self.course_instance.course.slug,
+                    'instance_slug': self.course_instance.slug,
+                    'assignment_pk': self.pk}
+        )
 
     def __str__(self):
         return f"Course Task: {self.title}"
@@ -118,6 +129,12 @@ class PersonalAssignment(models.Model):
             MaxValueValidator(100),
         ]
     )
+
+    @property
+    def is_deadline_missed(self):
+        if self.course_instance_assignment.start_date and self.course_instance_assignment.end_date:
+            return self.course_instance_assignment.end_date < timezone.now()
+        return False
 
     def get_absolute_url(self):
         return reverse('courses:personal-assignment',
