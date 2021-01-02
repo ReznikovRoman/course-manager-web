@@ -11,8 +11,8 @@
         <p class="mb-5">{{ course_instance.course.description }}</p>
 
         <div class="assignments-list mb-4">
+            <h3>Course Assignments</h3>
             {% if course_instance.course_assignments.all %}
-                <h3>Course Assignments</h3>
                 <ul>
                     {% for assignment in course_instance.course_assignments.all %}
                         <li>
@@ -23,13 +23,13 @@
                     {% endfor %}
                 </ul>
             {% else %}
-                <h3>There are no assignments in the course yet.</h3>
+                <p>There are no assignments in the course yet.</p>
             {% endif %}
         </div>
 
         <div class="enrolls-list">
-            {% if course_instance.enrolls %}
-                <h3>Enrolls</h3>
+            <h3>Enrolls</h3>
+            {% if course_instance.enrolls.all %}
                 <ul>
                 {% for enroll in course_instance.enrolls.all %}
                     <li>
@@ -41,7 +41,7 @@
 
                 </ul>
             {% else %}
-                <h3>There are no students in the course yet.</h3>
+                <p>There are no students in the course yet.</p>
             {% endif %}
         </div>
 

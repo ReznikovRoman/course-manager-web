@@ -21,6 +21,12 @@
                 {{ personal_assignment.course_instance_assignment.end_date }}
             </span>
         </p>
+        {% if personal_assignment.is_completed %}
+            <p>
+                Completion Date:
+                <span class="{% if personal_assignment.is_done_after_deadline %}grade-red{% endif %}">{{ personal_assignment.completion_date }}</span>
+            </p>
+        {% endif %}
 
         <div class="assignment-student-answers">
             <h2>Your solution</h2>
@@ -38,7 +44,7 @@
                 </p>
                 <p>
                     Mark:
-                    <span class="{% if personal_assignment.is_deadline_missed %}grade-red{% else %}grade-green{% endif %}">
+                    <span class="{% if personal_assignment.is_done_after_deadline %}grade-red{% else %}grade-green{% endif %}">
                         {{ personal_assignment.grade }}
                     </span>
 

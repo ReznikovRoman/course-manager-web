@@ -2,7 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
-from datetime import datetime
+from django.utils import timezone
 from tempus_dominus.widgets import DateTimePicker
 
 from . import models
@@ -82,7 +82,7 @@ class CourseAssignmentForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CourseAssignmentForm, self).__init__(*args, **kwargs)
-        self.fields['start_date'].initial = datetime.now()
+        self.fields['start_date'].initial = timezone.datetime.now()
 
 
 

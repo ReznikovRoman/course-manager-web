@@ -8,6 +8,7 @@ from django.views.generic.detail import SingleObjectMixin, SingleObjectTemplateR
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 
 from braces.views import MultiplePermissionsRequiredMixin, GroupRequiredMixin
 
@@ -319,18 +320,20 @@ class PersonalAssignmentTeacherEvaluate(LoginRequiredMixin,
             personal_assignment.grade = mark_form.data['grade']
             if self.request.POST.get('is_completed', None):
                 personal_assignment.is_completed = True
+                if personal_assignment.completion_date is None:
+                    personal_assignment.completion_date = timezone.datetime.now()
             else:
                 personal_assignment.is_completed = False
+                personal_assignment.completion_date = None
             personal_assignment.save()
         return super(PersonalAssignmentTeacherEvaluate, self).form_valid(form)
 
     def get_success_url(self):
-        return reverse('courses:personal-assignment-teacher-detail',
+        return reverse('courses:enroll-teacher-detail',
                        kwargs={
                            'course_slug': self.kwargs.get('course_slug'),
                            'instance_slug': self.kwargs.get('instance_slug'),
                            'enroll_pk': self.kwargs.get('enroll_pk'),
-                           'assignment_pk': self.kwargs.get('assignment_pk'),
                        })
 
 

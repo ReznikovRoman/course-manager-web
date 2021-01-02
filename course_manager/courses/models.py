@@ -129,11 +129,18 @@ class PersonalAssignment(models.Model):
             MaxValueValidator(100),
         ]
     )
+    completion_date = models.DateTimeField(null=True, blank=True)
 
     @property
     def is_deadline_missed(self):
         if self.course_instance_assignment.start_date and self.course_instance_assignment.end_date:
             return self.course_instance_assignment.end_date < timezone.now()
+        return False
+
+    @property
+    def is_done_after_deadline(self):
+        if self.course_instance_assignment.end_date and self.completion_date:
+            return self.completion_date > self.course_instance_assignment.end_date
         return False
 
     def get_absolute_url(self):
