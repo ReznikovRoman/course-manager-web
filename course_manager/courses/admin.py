@@ -47,12 +47,12 @@ class CourseInstanceAdmin(admin.ModelAdmin):
 
 
 class EnrollAdmin(admin.ModelAdmin):
-    list_display = ('student', 'course_instance', 'average_mark', )
+    list_display = ('student', 'course_instance', 'average_mark', 'is_course_finished')
     exclude = ('USERNAME_FIELD', )
     search_fields = ('student__email', )
     readonly_fields = ('average_mark', )
 
-    list_filter = ('course_instance', )
+    list_filter = ('course_instance__course', 'course_instance', 'is_course_finished')
     filter_horizontal = ()
     fieldsets = ()
     ordering = ()
