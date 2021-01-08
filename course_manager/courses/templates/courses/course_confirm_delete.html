@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Manager | Delete Course
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+        <h2>Are you sure that you want to delete course: '{{ course.base_title }}'?</h2>
+        <p>{{ course.description }}</p>
+
+        <hr>
+        <form class="mt-4" method="POST">
+            {% csrf_token %}
+            <input type="submit" value="Confirm Delete" class="btn btn-danger">
+            <a href="{% url 'courses:course-manager-detail' slug=course.slug %}"
+               class="btn btn-primary ml-2">
+                Cancel
+            </a>
+        </form>
+    </div>
+{% endblock %}
+
+

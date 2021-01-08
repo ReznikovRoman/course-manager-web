@@ -85,7 +85,44 @@ class CourseAssignmentForm(forms.ModelForm):
         self.fields['start_date'].initial = timezone.datetime.now()
 
 
+class CourseForm(forms.ModelForm):
 
+    class Meta:
+        model = models.Course
+        exclude = ('slug', )
+
+
+class CourseInstanceForm(forms.ModelForm):
+
+    def clean_end_date(self):
+        data = self.cleaned_data['end_date']
+        if data is not None and self.cleaned_data['start_date'] is not None and data < self.cleaned_data['start_date']:
+            raise ValidationError('Invalid date - End date in the past')
+        return data
+
+    class Meta:
+        model = models.CourseInstance
+        exclude = ('course', 'slug', )
+        widgets = {
+            'start_date': forms.DateInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Select a date',
+                    'type': 'date'
+                },
+            ),
+            'end_date': forms.DateInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Select a date',
+                    'type': 'date'
+                },
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(CourseInstanceForm, self).__init__(*args, **kwargs)
+        self.fields['start_date'].initial = timezone.datetime.now()
 
 
 

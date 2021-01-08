@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Manager | Course Instance
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+        <h1 class="mb-3">{{ course_instance.sub_title }} <span class="text-muted">(Manager)</span></h1>
+        <p class="text-muted">{{ course_instance.start_date }} - {{ course_instance.end_date }}</p>
+        <p>Min. Average Mark: {{ course_instance.min_mark }}</p>
+
+        <p>{{ course_instance.course.description }}</p>
+
+
+
+        <a href="{% url 'courses:course-instance-manager-edit' course_slug=course_instance.course.slug instance_slug=course_instance.slug %}"
+           class="btn btn-warning mr-2">
+            Change
+        </a>
+        <a href="{% url 'courses:course-instance-manager-delete' course_slug=course_instance.course.slug instance_slug=course_instance.slug %}"
+           class="btn btn-danger">
+            Delete
+        </a>
+    </div>
+{% endblock %}
+

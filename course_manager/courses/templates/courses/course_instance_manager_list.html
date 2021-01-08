@@ -1,25 +1,19 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    Course Details
+    Manager | Course Instances
 {% endblock %}
 
 
 {% block content %}
     <div class="container">
-        <h1 class="mb-3">{{ course.base_title }}</h1>
-        <p>{{ course.description }}</p>
-    </div>
-
-    <div class="container">
-        <h2 class="mb-5 mt-5">Available Courses</h2>
-
-        {% if available_courses %}
+        <h1 class="mb-5">Course Instances <span class="text-muted">(Manager)</span></h1>
+        {% if course_instances %}
             <div class="row">
-                {% for course_instance in available_courses  %}
+                {% for course_instance in course_instances  %}
                     <div class="col-md-4 col-sm-6 col-xs-12">
                         <div class="card">
-                            <a href="{% url 'courses:course-instance-detail' course_slug=course_instance.course.slug instance_slug=course_instance.slug %}"
+                            <a href="{% url 'courses:course-instance-manager-detail' course_slug=course_instance.course.slug instance_slug=course_instance.slug %}"
                                class="stretched-link"></a>
                             <div class="card-body">
                                 <h5 class="card-title">{{ course_instance.sub_title }}</h5>
@@ -34,11 +28,11 @@
                             </div>
                         </div><!-- card -->
                     </div><!-- col-md-4 -->
-                {%  endfor %}
+                {% endfor %}
             </div>
         {% else %}
-            <p>There are no available courses yet.</p>
-        {% endif %}
-
+            <p>You do not manage any Course Instance yet.</p>
+        {% endif %} 
     </div>
 {% endblock %}
+

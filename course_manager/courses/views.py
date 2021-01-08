@@ -453,6 +453,172 @@ class CourseAssignmentTeacherDeleteView(LoginRequiredMixin,
         )
 
 
+# ============== MANAGER =====================
+
+
+class CourseManagerListView(LoginRequiredMixin,
+                            GroupRequiredMixin,
+                            generic.ListView):
+
+    group_required = 'managers'
+    model = course_models.Course
+    template_name = 'courses/course_manager_list.html'
+    context_object_name = 'courses'
+
+    def get_queryset(self):
+        return get_object_or_404(account_models.Manager, user=self.request.user).supervised_courses.all
+
+
+class CourseManagerDetailView(LoginRequiredMixin,
+                              GroupRequiredMixin,
+                              generic.DetailView):
+
+    group_required = 'managers'
+    model = course_models.Course
+    template_name = 'courses/course_manager_detail.html'
+    context_object_name = 'course'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(course_models.Course, slug=self.kwargs.get('slug'))
+
+    def get_context_data(self, **kwargs):
+        context = super(CourseManagerDetailView, self).get_context_data(**kwargs)
+        context['manager_courses'] = get_object_or_404(account_models.Manager, user=self.request.user).\
+            supervised_course_instances.filter(course=self.get_object())
+        return context
+
+
+class CourseManagerCreateView(LoginRequiredMixin,
+                              GroupRequiredMixin,
+                              generic.CreateView):
+
+    group_required = 'managers'
+    model = course_models.Course
+    context_object_name = 'new_course'
+    form_class = forms.CourseForm
+
+    def form_valid(self, form):
+        self.object = form.save()
+        get_object_or_404(account_models.Manager, user=self.request.user).supervised_courses.add(self.object)
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class CourseManagerUpdateView(LoginRequiredMixin,
+                              GroupRequiredMixin,
+                              generic.UpdateView):
+
+    group_required = 'managers'
+    model = course_models.Course
+    context_object_name = 'course'
+    form_class = forms.CourseForm
+
+
+class CourseManagerDeleteView(LoginRequiredMixin,
+                              GroupRequiredMixin,
+                              generic.DeleteView):
+
+    group_required = 'managers'
+    model = course_models.Course
+    context_object_name = 'course'
+    success_url = reverse_lazy('courses:course-manager-list')
+
+
+class CourseInstanceManagerListView(LoginRequiredMixin,
+                                    GroupRequiredMixin,
+                                    generic.ListView):
+
+    group_required = 'managers'
+    model = course_models.CourseInstance
+    template_name = 'courses/course_instance_manager_list.html'
+    context_object_name = 'course_instances'
+
+    def get_queryset(self):
+        return get_object_or_404(account_models.Manager, user=self.request.user).supervised_course_instances.all
+
+
+class CourseInstanceManagerDetail(LoginRequiredMixin,
+                                  GroupRequiredMixin,
+                                  generic.DetailView):
+
+    group_required = 'managers'
+    model = course_models.CourseInstance
+    template_name = 'courses/course_instance_manager_detail.html'
+    context_object_name = 'course_instance'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(
+            course_models.CourseInstance,
+            course__slug=self.kwargs.get('course_slug'),
+            slug=self.kwargs.get('instance_slug'),
+        )
+
+
+class CourseInstanceManagerCreateView(LoginRequiredMixin,
+                                      GroupRequiredMixin,
+                                      generic.CreateView):
+
+    group_required = 'managers'
+    model = course_models.CourseInstance
+    template_name = 'courses/course_instance_form.html'
+    context_object_name = 'new_course_instance'
+    form_class = forms.CourseInstanceForm
+
+    def form_valid(self, form):
+        form.instance.course = get_object_or_404(course_models.Course, slug=self.kwargs.get('course_slug'))
+        self.object = form.save()
+        get_object_or_404(account_models.Manager, user=self.request.user).supervised_course_instances.add(self.object)
+        return HttpResponseRedirect(reverse('courses:course-instance-manager-detail',
+                                            kwargs={
+                                                'course_slug': self.kwargs.get('course_slug'),
+                                                'instance_slug': self.object.slug,
+                                            }))
+
+
+# Update CourseInstance
+    # 'min_mark'
+    # 'sub_title'
+    #  'start_date' + 'end_date'
+class CourseInstanceManagerUpdate(LoginRequiredMixin,
+                                  GroupRequiredMixin,
+                                  generic.UpdateView):
+    group_required = 'managers'
+    model = course_models.CourseInstance
+    template_name = 'courses/course_instance_form.html'
+    context_object_name = 'new_course_instance'
+    form_class = forms.CourseInstanceForm
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(course_models.CourseInstance,
+                                 course=get_object_or_404(course_models.Course,
+                                                          slug=self.kwargs.get('course_slug')),
+                                 slug=self.kwargs.get('instance_slug'))
+
+    def get_success_url(self):
+        return reverse('courses:course-instance-manager-detail',
+                       kwargs={
+                           'course_slug': self.kwargs.get('course_slug'),
+                           'instance_slug': self.object.slug,
+                       })
+
+
+class CourseInstanceManagerDelete(LoginRequiredMixin,
+                                  GroupRequiredMixin,
+                                  generic.DeleteView):
+    group_required = 'managers'
+    model = course_models.CourseInstance
+    template_name = 'courses/course_instance_confirm_delete.html'
+    context_object_name = 'course_instance'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(course_models.CourseInstance,
+                                 course=get_object_or_404(course_models.Course,
+                                                          slug=self.kwargs.get('course_slug')),
+                                 slug=self.kwargs.get('instance_slug'))
+
+    def get_success_url(self):
+        return reverse_lazy('courses:course-manager-detail', kwargs={'slug': self.kwargs.get('course_slug')})
+
+
 ######################################################################################################################
 
 

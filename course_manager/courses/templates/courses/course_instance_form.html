@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block title %}
+    Manager | New Course Instance
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+        {% if new_course_instance.sub_title %}
+            <h1>Edit {{ new_course_instance.sub_title }}</h1>
+        {% else %}
+            <h1>New Course Instance</h1>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            {% buttons %}
+                <button type="submit" class="btn btn-primary">Save</button>
+            {% endbuttons %}
+        </form>
+    </div>
+{% endblock %}

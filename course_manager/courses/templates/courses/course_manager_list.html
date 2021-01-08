@@ -1,18 +1,20 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    Courses
+    Manager | Courses
 {% endblock %}
 
 
 {% block content %}
-    <div class="container">
-        <h1 class="mb-5">Courses</h1>
-            <div class="row">
-            {% for course in course_list  %}
+    <h1 class="mb-3">Courses <span class="text-muted">(Manager)</span></h1>
+    <a href="{% url 'courses:course-manager-new' %}" class="btn btn-primary mb-5">New Course</a>
+    {% if courses %}
+        <div class="row">
+            {% for course in courses  %}
                 <div class="col-md-4 col-sm-6 col-xs-12">
                     <div class="card">
-                        <a href="{% url 'courses:course-detail' slug=course.slug %}" class="stretched-link"></a>
+                        <a href="{% url 'courses:course-manager-detail' slug=course.slug %}"
+                           class="stretched-link"></a>
                         <div class="card-body">
                             <h5 class="card-title">{{ course.base_title }}</h5>
                             <p class="card-text">{{ course.description|truncatewords:"15" }}</p>
@@ -20,13 +22,17 @@
 
                         <div class="card-footer">
                             <p class="card-text d-inline">
-                                <small class="text-muted">Details</small>
+                                <small class="text-muted">test</small>
                             </p>
                             <i class="fas fa-arrow-right post_arrow_img d-inline"></i>
                         </div>
                     </div><!-- card -->
                 </div><!-- col-md-4 -->
             {%  endfor %}
-            </div>
-    </div>
+        </div>
+    {% else %}
+        <p>You don't manage any Course yet.</p>
+    {% endif %}
 {% endblock %}
+
+

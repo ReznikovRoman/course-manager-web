@@ -70,3 +70,12 @@ body{
 .missed-deadline{
     color: #ee2222 !important;
 }
+
+.fa-arrow-right{
+    margin-top: 3px !important;
+    right: 0 !important;
+    position: absolute !important;
+    margin-right: 15px !important;
+}
+
+

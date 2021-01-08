@@ -89,20 +89,23 @@
 
                             <div class="dropdown-menu dropdown-menu-right dropdown-info" aria-labelledby="navbarDropdownMenuLink-4">
                               <a class="dropdown-item" href="{% url 'courses:instances-teacher-list' %}">Courses</a>
-                              <a class="dropdown-item" href="#">Teacher - Action 2</a>
+                              <a class="dropdown-item" href="{% url 'admin:index' %}">Admin Panel</a>
                               <a class="dropdown-item" href="#">Teacher - Action 3</a>
                             </div>
                         </li>
                     {% endif %}
+
                     {% if user|has_group:'managers' or user.is_superuser %}
                         <li class="nav-item dropdown mt-2">
                             <a href="" class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-4" data-toggle="dropdown"
                                aria-haspopup="true" aria-expanded="false">Manager</a>
 
                             <div class="dropdown-menu dropdown-menu-right dropdown-info" aria-labelledby="navbarDropdownMenuLink-4">
-                              <a class="dropdown-item" href="#">Action 1</a>
-                              <a class="dropdown-item" href="#">Action 2</a>
-                              <a class="dropdown-item" href="#">Action 3</a>
+                              <a class="dropdown-item" href="{% url 'courses:course-manager-list' %}">Courses</a>
+                              <a class="dropdown-item" href="{% url 'courses:course-instance-manager-list' %}">
+                                  Course Instances
+                              </a>
+                              <a class="dropdown-item" href="{% url 'admin:index' %}">Admin Panel</a>
                             </div>
                         </li>
                     {% endif %}

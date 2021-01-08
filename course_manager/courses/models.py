@@ -28,6 +28,10 @@ class Course(models.Model):
         self.slug = slugify(self.base_title)
         super(Course, self).save(*args, **kwargs)
 
+    def get_absolute_url(self):
+        return reverse('courses:course-manager-detail',
+                       kwargs={'slug': self.slug})
+
     def __str__(self):
         return f"{self.base_title} Course"
 

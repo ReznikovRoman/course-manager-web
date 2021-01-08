@@ -18,7 +18,7 @@
                            class="stretched-link"></a>
                         <div class="card-body">
                             <h5 class="card-title">{{ course_instance.sub_title }}</h5>
-                            <p class="card-text">{{ course_instance.course.description }}</p>
+                            <p class="card-text">{{ course_instance.course.description|truncatewords:"15" }}</p>
                         </div><!-- card content -->
 
                         <div class="card-footer">
