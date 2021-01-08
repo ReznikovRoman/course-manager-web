@@ -43,6 +43,13 @@ class UpdateProfileForm(forms.ModelForm):
         exclude = ('address', 'user', )
         widgets = {
             'bio': forms.Textarea(attrs={'class': 'input_field'}),
+            'date_of_birth': forms.DateInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Select a date',
+                    'type': 'date'
+                },
+            ),
         }
 
     def __init__(self, *args, **kwargs):
