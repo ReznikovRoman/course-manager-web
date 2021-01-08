@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django import forms
 
 from django.db import models as db_models
 from django.db.models import Func, F, Sum, Avg, Q
@@ -11,9 +12,24 @@ from . import models
 #####################################################################################################################
 
 
+class CourseForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Course
+        exclude = ('slug', )
+
+
+class CourseInstanceForm(forms.ModelForm):
+
+    class Meta:
+        model = models.CourseInstance
+        exclude = ('slug', )
+
+
 class CourseAdmin(admin.ModelAdmin):
     list_display = ('base_title', 'short_description', 'course_instances_count')
     search_fields = ('base_title', )
+    form = CourseForm
 
     def short_description(self, obj: models.Course):
         return obj.description[:60]
@@ -26,6 +42,7 @@ class CourseInstanceAdmin(admin.ModelAdmin):
     list_display = ('sub_title', 'base_course_link', 'min_mark', 'start_date', 'end_date', 'enrolls_count')
     search_fields = ('sub_title', 'course__base_title')
     readonly_fields = ('get_teachers', )
+    form = CourseInstanceForm
 
     def base_course_link(self, obj: models.CourseInstance):
         return mark_safe(
