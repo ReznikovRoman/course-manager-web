@@ -77,7 +77,7 @@ class TeacherAdmin(admin.ModelAdmin):
 
     def get_user_link(self, obj: models.Teacher):
         return mark_safe(
-            f"""<a href="{reverse('admin:accounts_teacher_change', args=(obj.user.pk,))}">{obj.user}</a>"""
+            f"""<a href="{reverse('admin:accounts_customuser_change', args=(obj.user.pk,))}">{obj.user}</a>"""
         )
 
     get_user_link.short_description = 'user link'
